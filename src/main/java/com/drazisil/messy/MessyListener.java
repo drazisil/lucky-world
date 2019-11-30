@@ -55,7 +55,7 @@ public class MessyListener implements Listener
 
 
         // Update the counter
-        instance.updateTimes(instance.getMultiBlockCount() * 2);
+        instance.setMultiBlockCount(instance.getMultiBlockCount() * 2);
 
     }
 

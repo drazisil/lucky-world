@@ -11,6 +11,7 @@ public final class Messy extends JavaPlugin {
     static final Logger logger = LogManager.getLogger();
     static Messy instance;
     static FileConfiguration config;
+    static final String name = "Messy";
 
     @Override
     public void onEnable() {
@@ -20,6 +21,9 @@ public final class Messy extends JavaPlugin {
         config.options().copyDefaults(true);
         saveConfig();
 
+        // Register command manager
+        this.getCommand("messy").setExecutor(new MessyCommands());
+
     }
 
     @Override
@@ -28,7 +32,7 @@ public final class Messy extends JavaPlugin {
         saveConfig();
     }
 
-    static void updateTimes(int val) {
+    static void setMultiBlockCount(int val) {
         config.set("multiBlockCount", val);
     }
 
