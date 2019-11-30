@@ -7,12 +7,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="928886f3-6f1f-474c-af72-3614806bb1dd" name="Default" comment="init">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/drazisil/messy/MyListener.class" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/drazisil/messy/MyListener.java" afterPath="$PROJECT_DIR$/src/main/java/com/drazisil/messy/MessyListener.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/artifacts/Messy/Messy.jar" afterPath="$PROJECT_DIR$/out/artifacts/Messy/Messy.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/drazisil/messy/Messy.class" afterPath="$PROJECT_DIR$/target/classes/com/drazisil/messy/Messy.class" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/artifacts/Messy/Messy.jar" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/drazisil/messy/Messy.java" afterPath="$PROJECT_DIR$/src/main/java/com/drazisil/messy/Messy.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -25,14 +22,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Messy.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Messy.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/drazisil/messy/Messy.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
+            <state relative-caret-position="337">
+              <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#812#813#0" expanded="true" />
+                <element signature="e#865#866#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -51,11 +49,21 @@
       <file leaf-file-name="MessyListener.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/drazisil/messy/MessyListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="23" column="26" lean-forward="false" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+            <state relative-caret-position="125">
+              <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="12" column="17" lean-forward="false" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -109,6 +117,7 @@
         <option value="$PROJECT_DIR$/src/main/java/com/drazisil/messy/MyListener.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/drazisil/messy/MessyListener.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/drazisil/messy/Messy.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -155,24 +164,6 @@
             <path>
               <item name="Messy" type="b2602c69:ProjectViewProjectNode" />
               <item name="mess" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Messy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mess" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Messy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mess" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Messy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mess" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-              <item name="Messy" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Messy" type="b2602c69:ProjectViewProjectNode" />
@@ -376,12 +367,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1575079352768</updated>
-      <workItem from="1575079355672" duration="15773000" />
+      <workItem from="1575079355672" duration="15993000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15773000" />
+    <option name="totallyTimeSpent" value="15993000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="95" y="40" width="1400" height="860" extended-state="0" />
@@ -578,16 +569,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/drazisil/messy/MessyListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="23" column="26" lean-forward="false" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/spigotmc/spigot-api/1.14.4-R0.1-SNAPSHOT/spigot-api-1.14.4-R0.1-20191130.080751-85-sources.jar!/org/bukkit/plugin/java/JavaPlugin.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-342">
@@ -598,12 +579,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/drazisil/messy/Messy.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
+        <state relative-caret-position="337">
+          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#812#813#0" expanded="true" />
+            <element signature="e#865#866#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/drazisil/messy/MessyListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="12" column="17" lean-forward="false" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
