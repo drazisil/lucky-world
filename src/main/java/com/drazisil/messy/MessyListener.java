@@ -48,29 +48,45 @@ public class MessyListener implements Listener
         Material oldMat = oldItem.getType();
         int stackSize = oldMat.getMaxStackSize();
         int newCount = instance.getMultiBlockCount();
-        int stackCount = newCount / stackSize;
-        int itemsLeft = newCount % stackSize;
 
-        logger.info("total stack size: " + stackSize + ", stacks: " + stackCount + ", leftovers: " + itemsLeft);
+
+
+        dropStacks(world, location, oldMat, newCount, stackSize);
+
+
+        // Update the counter
+        instance.updateTimes(instance.getMultiBlockCount() * 2);
+
+    }
+
+    /**
+     * Drop a number of full ItemStacks, as well as any leftovers
+     *
+     * @param world The World in which to drop the stacks
+     * @param location The Location in which to drop the ItemStacks
+     * @param material The Material which the ItemStacks are
+     * @param itemCount The number of Items to drop in total
+     * @param maxStackSize The max stack size for the ItemStack
+     */
+    private void dropStacks(World world, Location location, Material material, int itemCount, int maxStackSize) {
+        int stackCount = itemCount / maxStackSize;
+        int itemsLeft = itemCount % maxStackSize;
+
+        logger.info("total stack size: " + maxStackSize + ", stacks: " + stackCount + ", leftovers: " + itemsLeft);
 
         // Drop the full stacks
         if (stackCount > 0) {
             logger.info("dropping " + stackCount + " stacks...");
             for (int i = stackCount; i > 0; i--) {
-                ItemStack newStack = new ItemStack(oldMat, stackSize);
-                world.dropItem(location, newStack);
+                world.dropItem(location, new ItemStack(material, maxStackSize));
             }
         }
 
         // Drop the rest
         if (itemsLeft > 0) {
             logger.info("dropping rest: " + itemsLeft);
-            ItemStack newStack = new ItemStack(oldMat, itemsLeft);
-            world.dropItem(location, newStack);
+            world.dropItem(location, new ItemStack(material, itemsLeft));
         }
-
-        // Update the counter
-        instance.updateTimes(instance.getMultiBlockCount() * 2);
 
     }
 }

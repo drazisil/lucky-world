@@ -28,8 +28,8 @@ public final class Messy extends JavaPlugin {
         saveConfig();
     }
 
-    static void updateTimes(int newVal) {
-        config.set("multiBlockCount", newVal);
+    static void updateTimes(int val) {
+        config.set("multiBlockCount", val);
     }
 
     static int getMultiBlockCount() {
