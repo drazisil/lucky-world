@@ -1,0 +1,4 @@
+name: Messy
+version: 1.0-SNAPSHOT
+main: com.drazisil.messy.Messy
+api-version: 1.13

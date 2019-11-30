@@ -1,0 +1,4 @@
+name: Messy
+version: ${project.version}
+main: com.drazisil.messy.Messy
+api-version: 1.13
