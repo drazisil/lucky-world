@@ -53,6 +53,11 @@ public class MessyListener implements Listener
 
         dropStacks(world, location, oldMat, newCount, stackSize);
 
+        // Should we bang?
+        if (instance.shouldBang()) {
+            instance.bang(world, location);
+        }
+
 
         // Update the counter
         instance.setMultiBlockCount(instance.getMultiBlockCount() * 2);
@@ -72,11 +77,9 @@ public class MessyListener implements Listener
         int stackCount = itemCount / maxStackSize;
         int itemsLeft = itemCount % maxStackSize;
 
-        logger.info("total stack size: " + maxStackSize + ", stacks: " + stackCount + ", leftovers: " + itemsLeft);
 
         // Drop the full stacks
         if (stackCount > 0) {
-            logger.info("dropping " + stackCount + " stacks...");
             for (int i = stackCount; i > 0; i--) {
                 world.dropItem(location, new ItemStack(material, maxStackSize));
             }
@@ -84,7 +87,6 @@ public class MessyListener implements Listener
 
         // Drop the rest
         if (itemsLeft > 0) {
-            logger.info("dropping rest: " + itemsLeft);
             world.dropItem(location, new ItemStack(material, itemsLeft));
         }
 
