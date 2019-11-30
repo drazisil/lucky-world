@@ -21,7 +21,7 @@ import static com.drazisil.messy.Messy.logger;
 
 
 
-public class MyListener implements Listener
+public class MessyListener implements Listener
 
 
 {
@@ -47,7 +47,7 @@ public class MyListener implements Listener
         ItemStack oldItem = Iterables.get(oldDrops, 0);
         Material oldMat = oldItem.getType();
         int stackSize = oldMat.getMaxStackSize();
-        int newCount = instance.getTimes();
+        int newCount = instance.getMultiBlockCount();
         int stackCount = newCount / stackSize;
         int itemsLeft = newCount % stackSize;
 
@@ -70,7 +70,7 @@ public class MyListener implements Listener
         }
 
         // Update the counter
-        instance.updateTimes(instance.getTimes() * 2);
+        instance.updateTimes(instance.getMultiBlockCount() * 2);
 
     }
 }
