@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,10 +16,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
-
 import static com.drazisil.messy.Messy.instance;
-import static com.drazisil.messy.Messy.logger;
-
+import static com.drazisil.messy.util.Utilities.*;
 
 
 public class MessyListener implements Listener
@@ -34,6 +33,7 @@ public class MessyListener implements Listener
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        FileConfiguration config = instance.config;
         Block block = event.getBlock();
         Player player = event.getPlayer();
         Location location = player.getLocation();
@@ -47,20 +47,20 @@ public class MessyListener implements Listener
         ItemStack oldItem = Iterables.get(oldDrops, 0);
         Material oldMat = oldItem.getType();
         int stackSize = oldMat.getMaxStackSize();
-        int newCount = instance.getMultiBlockCount();
+        int newCount = getMultiBlockCount(config);
 
 
 
         dropStacks(world, location, oldMat, newCount, stackSize);
 
         // Should we bang?
-        if (instance.shouldBang()) {
-            instance.bang(world, location);
+        if (shouldBang()) {
+            bang(world, player, location);
         }
 
 
         // Update the counter
-        instance.setMultiBlockCount(instance.getMultiBlockCount() * 2);
+        setMultiBlockCount(config, getMultiBlockCount(config) * 2);
 
     }
 
