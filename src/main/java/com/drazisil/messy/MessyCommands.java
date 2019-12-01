@@ -41,8 +41,19 @@ public class MessyCommands implements CommandExecutor {
                 setMultiBlockCount(config, Integer.parseInt(args[1]));
                 sendMessyMessage(sender, "The current multiBlockCount is: " + getMultiBlockCount(config));
                 break;
+            case "getBangMax":
+                sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
+                break;
+            case "setBangMax":
+                if (!(args.length == 2) || (Integer.parseInt(args[1]) < 0)) {
+                    sendMessyMessage(sender, "Please give me a number to set it to.");
+                    return true;
+                }
+                setBangMax(config, Integer.parseInt(args[1]));
+                sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
+                break;
             case "bang":
-                logger.info("Should bang: " + shouldBang());
+                logger.info("Should bang: " + shouldBang(config));
                 return true;
             case "bangForce":
                 if (sender instanceof Player) {

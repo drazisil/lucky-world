@@ -30,15 +30,30 @@ public class Utilities {
         return multiBlockCount;
     }
 
+    public static void setBangMax(FileConfiguration config, int val) {
+        config.set("bangMax", val);
+    }
+
     /**
-     * Tests a Random Int from 0 to 1 million and returns true if it contains magicNumber
+     * Return the value ofbangMax from the FileConfiguration object
      *
-     * @param length The length the Random number should be to return true
+     * @param config a FileConfiguration object
+     * @return int
+     */
+    public static int getBangMax(FileConfiguration config) {
+        int bangMax = config.getInt("bangMax");
+        return bangMax;
+    }
+
+    /**
+     * Tests a Random Int from 1 to 20 million and returns true if it contains magicNumber
+     *
+     * @param magicNumber The number Random number should be to return true
      * @return boolean
      */
-    public static boolean shouldBang(int length) {
-        int number = new Random().nextInt(1000000);
-        return String.valueOf(number).length() == length;
+    public static boolean shouldBang(FileConfiguration config, int magicNumber) {
+        int number = new Random().nextInt(config.getInt("bangMax"));
+        return number == magicNumber;
     }
 
     /**
@@ -46,8 +61,8 @@ public class Utilities {
      *
      * @return boolean
      */
-    public static boolean shouldBang() {
-        return shouldBang(2);
+    public static boolean shouldBang(FileConfiguration config) {
+        return shouldBang(config, 4);
     }
 
     /**
@@ -59,7 +74,7 @@ public class Utilities {
      */
     public static void bang(World world, Player player, Location location) {
         Location newLocation = new Location(world, location.getX(), location.getY() + 10, location.getZ());
-        player.sendMessage("Look up!");
-        world.spawn(newLocation, TNTPrimed.class);
+        player.sendMessage("Uh...");
+        world.spawn(location, TNTPrimed.class);
     }
 }

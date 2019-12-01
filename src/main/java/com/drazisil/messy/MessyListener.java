@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -33,28 +35,44 @@ public class MessyListener implements Listener
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        FileConfiguration config = instance.config;
-        Block block = event.getBlock();
         Player player = event.getPlayer();
+        handleBlockBreak(event, player, false);
+    }
+
+    @EventHandler
+    public void onBlockDamage(BlockDamageEvent event) {
+        Player player = event.getPlayer();
+        handleBlockBreak(event, player, true);
+    }
+
+    public void handleBlockBreak(BlockEvent event, Player player, Boolean isSilk) {
+        FileConfiguration config = instance.config;
+
+
+        Block block = event.getBlock();
         Location location = player.getLocation();
         World world = player.getWorld();
         Collection<ItemStack> oldDrops = block.getDrops();
 
         // Exit if empty
-        if (oldDrops.isEmpty()) return;
+        if (oldDrops.isEmpty() && !isSilk) return;
 
-
-        ItemStack oldItem = Iterables.get(oldDrops, 0);
-        Material oldMat = oldItem.getType();
-        int stackSize = oldMat.getMaxStackSize();
         int newCount = getMultiBlockCount(config);
 
-
-
-        dropStacks(world, location, oldMat, newCount, stackSize);
+        if (isSilk) {
+            // Was this Silk Touch?
+            int stackSize = block.getType().getMaxStackSize();
+            dropStacks(world, location, block.getType(), newCount, stackSize);
+        } else {
+            // Drop normally
+            ItemStack oldItem = Iterables.get(oldDrops, 0);
+            Material oldMat = oldItem.getType();
+            int stackSize = block.getType().getMaxStackSize();
+            dropStacks(world, location, oldMat, newCount, stackSize);
+        }
 
         // Should we bang?
-        if (shouldBang()) {
+        if (shouldBang(config)) {
             bang(world, player, location);
         }
 

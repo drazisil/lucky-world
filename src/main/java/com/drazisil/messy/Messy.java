@@ -17,6 +17,7 @@ public final class Messy extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MessyListener(), this);
         config = this.getConfig();
         config.addDefault("multiBlockCount", 1);
+        config.addDefault("bangMax", 50);
         config.options().copyDefaults(true);
         saveConfig();
 
