@@ -42,6 +42,7 @@ public class MessyListener implements Listener
     @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
         Player player = event.getPlayer();
+        if (!event.getInstaBreak()) return;
         handleBlockBreak(event, player, true);
     }
 
@@ -78,7 +79,7 @@ public class MessyListener implements Listener
 
 
         // Update the counter
-        setMultiBlockCount(config, getMultiBlockCount(config) * 2);
+        setMultiBlockCount(config, getMultiBlockCount(config) + 300);
 
     }
 
