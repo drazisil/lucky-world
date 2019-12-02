@@ -41,12 +41,6 @@ public class MessyListener implements Listener
         handleBlockBreak(event, player);
     }
 
-//    @EventHandler
-//    public void onBlockDamage(BlockDamageEvent event) {
-//        Player player = event.getPlayer();
-//        handleBlockBreak(event, player);
-//    }
-
     public void handleBlockBreak(BlockEvent event, Player player) {
         FileConfiguration config = instance.config;
 
