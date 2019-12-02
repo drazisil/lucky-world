@@ -7,12 +7,12 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,28 +38,33 @@ public class MessyListener implements Listener
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        handleBlockBreak(event, player, false);
+        handleBlockBreak(event, player);
     }
 
-    @EventHandler
-    public void onBlockDamage(BlockDamageEvent event) {
-        Player player = event.getPlayer();
-        if (!event.getInstaBreak()) return;
-        handleBlockBreak(event, player, true);
-    }
+//    @EventHandler
+//    public void onBlockDamage(BlockDamageEvent event) {
+//        Player player = event.getPlayer();
+//        handleBlockBreak(event, player);
+//    }
 
-    public void handleBlockBreak(BlockEvent event, Player player, Boolean isSilk) {
+    public void handleBlockBreak(BlockEvent event, Player player) {
         FileConfiguration config = instance.config;
 
-        if (!shouldEvent()) return;
+        if (!shouldEvent(10, 3)) return;
 
-        instance.sendMessyMessage(player, "Hi");
+        boolean isSilk = false;
+
+        if (player.getEquipment().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) isSilk = true;
+
+        player.sendMessage("Hi");
 
 
         Block block = event.getBlock();
         Location location = player.getLocation();
         World world = player.getWorld();
         Collection<ItemStack> oldDrops = block.getDrops();
+
+        player.sendMessage("block: " + event.getBlock().toString() + ", isSilk: " + isSilk + ", oldDrops: " + oldDrops.toString() + ", length: " + oldDrops.size());
 
         // Exit if empty
         if (oldDrops.isEmpty() && !isSilk) return;
@@ -83,6 +88,8 @@ public class MessyListener implements Listener
             EntityType entity = PRIMED_TNT;
             bang(world, player, location, entity);
         }
+
+        player.sendMessage("isSilk: " + isSilk + ", oldDrops: " + oldDrops.toString());
 
 
         // Update the counter

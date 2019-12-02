@@ -77,9 +77,9 @@ public class Utilities {
         return number == magicNumber;
     }
 
-    public static boolean shouldEvent() {
-        int number = randInt(100);
-        return number == 42;
+    public static boolean shouldEvent(int max, int magicNumber) {
+        int number = randInt(max);
+        return number == magicNumber;
     }
 
     /**

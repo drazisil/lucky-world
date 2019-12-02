@@ -2,9 +2,7 @@ package com.drazisil.messy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Messy extends JavaPlugin {
@@ -33,14 +31,6 @@ public final class Messy extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         saveConfig();
-    }
-
-    void sendMessyMessage(CommandSender sender, String message) {
-        if (sender instanceof Player) {
-            sender.sendMessage(instance.name + ": " + message);
-        } else {
-            logger.info(message);
-        }
     }
 
 }

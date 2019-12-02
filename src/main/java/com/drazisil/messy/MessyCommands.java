@@ -28,7 +28,7 @@ public class MessyCommands implements CommandExecutor {
         logger.info("Detected messy command sent with the following args: " + String.join(" ", args));
 
         if (args.length == 0) {
-            instance.sendMessyMessage(sender, "That's...not quite correct");
+            sendMessyMessage(sender, "That's...not quite correct");
             return false;
         }
 
@@ -36,26 +36,26 @@ public class MessyCommands implements CommandExecutor {
 
         switch (commandName) {
             case "getMultiBlockCount":
-                instance.sendMessyMessage(sender, "The current multiBlockCount is: " + getMultiBlockCount(config));
+                sendMessyMessage(sender, "The current multiBlockCount is: " + getMultiBlockCount(config));
                 break;
             case "setMultiBlockCount":
                 if (!(args.length == 2) || (Integer.parseInt(args[1]) < 0)) {
-                    instance.sendMessyMessage(sender, "Please give me a number to set it to.");
+                    sendMessyMessage(sender, "Please give me a number to set it to.");
                     return true;
                 }
                 setMultiBlockCount(config, Integer.parseInt(args[1]));
-                instance.sendMessyMessage(sender, "The current multiBlockCount is: " + getMultiBlockCount(config));
+                sendMessyMessage(sender, "The current multiBlockCount is: " + getMultiBlockCount(config));
                 break;
             case "getBangMax":
-                instance.sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
+                sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
                 break;
             case "setBangMax":
                 if (!(args.length == 2) || (Integer.parseInt(args[1]) < 0)) {
-                    instance.sendMessyMessage(sender, "Please give me a number to set it to.");
+                    sendMessyMessage(sender, "Please give me a number to set it to.");
                     return true;
                 }
                 setBangMax(config, Integer.parseInt(args[1]));
-                instance.sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
+                sendMessyMessage(sender, "The current bangMax is: " + getBangMax(config));
                 break;
             case "bang":
                 logger.info("Should bang: " + shouldBang(config));
@@ -91,5 +91,12 @@ public class MessyCommands implements CommandExecutor {
 
 
 
+    void sendMessyMessage(CommandSender sender, String message) {
+        if (sender instanceof Player) {
+            sender.sendMessage(instance.name + ": " + message);
+        } else {
+            logger.info(message);
+        }
+    }
 
 }
