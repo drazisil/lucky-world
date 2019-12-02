@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +21,7 @@ import java.util.Collection;
 
 import static com.drazisil.messy.Messy.instance;
 import static com.drazisil.messy.util.Utilities.*;
+import static org.bukkit.entity.EntityType.PRIMED_TNT;
 
 
 public class MessyListener implements Listener
@@ -49,6 +51,10 @@ public class MessyListener implements Listener
     public void handleBlockBreak(BlockEvent event, Player player, Boolean isSilk) {
         FileConfiguration config = instance.config;
 
+        if (!shouldEvent()) return;
+
+        instance.sendMessyMessage(player, "Hi");
+
 
         Block block = event.getBlock();
         Location location = player.getLocation();
@@ -74,7 +80,8 @@ public class MessyListener implements Listener
 
         // Should we bang?
         if (shouldBang(config)) {
-            bang(world, player, location);
+            EntityType entity = PRIMED_TNT;
+            bang(world, player, location, entity);
         }
 
 
