@@ -39,7 +39,7 @@ public class MessyCommands implements CommandExecutor {
 //                    World world = player.getWorld();
 //                    Location location = player.getLocation();
 //
-//                    LuckyEventSlowFall.doAction(null, world, location, player);
+//                    LuckyEventSlowFallGhast.doAction(null, world, location, player);
 //
 //                }
 //                return true;

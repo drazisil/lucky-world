@@ -8,6 +8,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.drazisil.messy.Messy.logger;
+
 public class EventLuckyHandler {
 
     public enum LuckyEventRarity {
@@ -78,9 +80,11 @@ public class EventLuckyHandler {
     public static void handleLuckyEvent(BlockBreakEvent event, World world, Location location, Player player) {
         LuckyEventRarity rarity = getRandEventClass();
 
-        player.sendMessage("Rarity: " + rarity.toString());
+        LuckyEvent newEvent = getRandomEvent(rarity);
 
-        getRandomEvent(rarity).doAction(event, world, location, player);
+        logger.info("Triggering: " + newEvent + " of Rarity: " + rarity.toString());
+
+        newEvent.doAction(event, world, location, player);
 
     }
 
