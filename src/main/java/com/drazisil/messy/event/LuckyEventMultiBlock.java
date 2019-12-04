@@ -25,13 +25,11 @@ public class LuckyEventMultiBlock implements LuckyEvent {
 
     }
 
-    public static void doAction(BlockBreakEvent event, World world, Location location, Player player) {
+    @Override
+    public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
         boolean isSilk = false;
         int multiCountFactor = 5;
-
-
-        player.sendMessage("Hi");
 
 
         Block block = event.getBlock();
@@ -66,7 +64,7 @@ public class LuckyEventMultiBlock implements LuckyEvent {
      * @param itemCount The number of Items to drop in total
      * @param maxStackSize The max stack size for the ItemStack
      */
-    private static void dropStacks(World world, Location location, Material material, int itemCount, int maxStackSize) {
+    private void dropStacks(World world, Location location, Material material, int itemCount, int maxStackSize) {
         int stackCount = itemCount / maxStackSize;
         int itemsLeft = itemCount % maxStackSize;
 
@@ -84,4 +82,5 @@ public class LuckyEventMultiBlock implements LuckyEvent {
         }
 
     }
+
 }

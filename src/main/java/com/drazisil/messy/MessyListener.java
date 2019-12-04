@@ -1,7 +1,6 @@
 package com.drazisil.messy;
 
 
-import com.drazisil.messy.event.LuckyEventMultiBlock;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import static com.drazisil.messy.event.EventLuckyHandler.handleLuckyEvent;
 import static com.drazisil.messy.event.EventLuckyHandler.shouldEvent;
 
 
@@ -30,11 +30,12 @@ public class MessyListener implements Listener
         // Fast fail if not a lucky event
         if (!shouldEvent(10, 3)) return;
 
+
         Player player = event.getPlayer();
         World world = player.getWorld();
         Location location = player.getLocation();
 
-        LuckyEventMultiBlock.doAction(event, world, location, player);
+        handleLuckyEvent(event, world, location, player);
     }
 
 
