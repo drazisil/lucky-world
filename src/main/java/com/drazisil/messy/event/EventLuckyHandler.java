@@ -65,13 +65,13 @@ public class EventLuckyHandler {
     }
 
     public static LuckyEventRarity getRandEventClass() {
-        int number = randInt(10);
+        int number = randInt(100);
 
-        if (number >= 1 && number <= 6) return LuckyEventRarity.COMMON;
+        if (number >= 1 && number <= 70) return LuckyEventRarity.COMMON;
 
-        if (number >= 7 && number <= 9) return LuckyEventRarity.UNCOMMON;
+        if (number >= 71 && number <= 95) return LuckyEventRarity.UNCOMMON;
 
-        if (number == 10) return LuckyEventRarity.RARE;
+        if (number >= 96 && number <= 100) return LuckyEventRarity.RARE;
 
         return LuckyEventRarity.COMMON;
 

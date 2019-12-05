@@ -11,7 +11,7 @@ public class LuckyEventJumpBoost implements LuckyEvent {
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 400, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 400, 31));
 
     }
 }

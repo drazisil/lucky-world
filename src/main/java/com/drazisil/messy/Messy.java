@@ -21,6 +21,7 @@ public final class Messy extends JavaPlugin {
         EventLuckyHandler.registerEvent(COMMON, new LuckyEventMultiBlock());
         EventLuckyHandler.registerEvent(COMMON, new LuckyEventUndeadHorse());
         EventLuckyHandler.registerEvent(COMMON, new LuckyEventSheep());
+        EventLuckyHandler.registerEvent(COMMON, new LuckyEventParrotDance());
         EventLuckyHandler.registerEvent(UNCOMMON, new LuckyEventJumpBoost());
         EventLuckyHandler.registerEvent(UNCOMMON, new LuckyEventMooshoom());
         EventLuckyHandler.registerEvent(UNCOMMON, new LuckyEventChickens());
