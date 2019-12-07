@@ -1,5 +1,8 @@
 package com.drazisil.messy;
 
+import com.drazisil.messy.event.LuckyEvent;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -7,6 +10,8 @@ import org.bukkit.entity.Player;
 
 import static com.drazisil.messy.Messy.instance;
 import static com.drazisil.messy.Messy.logger;
+import static com.drazisil.messy.event.EventLuckyHandler.LuckyEventRarity.ALWAYS;
+import static com.drazisil.messy.event.EventLuckyHandler.getRandomEvent;
 
 public class MessyCommands implements CommandExecutor {
 
@@ -25,24 +30,16 @@ public class MessyCommands implements CommandExecutor {
         String commandName = args[0];
 
         switch (commandName) {
-//            case "bangForce":
-//                if (sender instanceof Player) {
-//                    Player player = ((Player) sender).getPlayer();
-//                    Location location = player.getLocation();
-//                    World world = player.getWorld();
-//                    new LuckyEventBang().doAction(null, world, location, player);
-//                }
-//                return true;
-//            case "fortuneForce":
-//                if (sender instanceof Player) {
-//                    Player player = ((Player) sender).getPlayer();
-//                    World world = player.getWorld();
-//                    Location location = player.getLocation();
-//
-//                    LuckyEventSlowFallGhast.doAction(null, world, location, player);
-//
-//                }
-//                return true;
+            case "luckyForce":
+                if (sender instanceof Player) {
+                    Player player = ((Player) sender).getPlayer();
+                    Location location = player.getLocation();
+                    World world = player.getWorld();
+                    LuckyEvent newEvent = getRandomEvent(ALWAYS);
+                    player.sendMessage("Hello, you requested a " + newEvent);
+                    newEvent.doAction(null, world, location, player);
+                }
+                return true;
             default:
                 return false;
         }

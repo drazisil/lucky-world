@@ -15,7 +15,8 @@ public class EventLuckyHandler {
     public enum LuckyEventRarity {
         COMMON,
         UNCOMMON,
-        RARE
+        RARE,
+        ALWAYS
     }
 
     public static ArrayList<LuckyEvent> eventsCommon = new ArrayList<LuckyEvent>();
@@ -23,6 +24,8 @@ public class EventLuckyHandler {
     public static ArrayList<LuckyEvent> eventsUncommon = new ArrayList<LuckyEvent>();
 
     public static ArrayList<LuckyEvent> eventsRare = new ArrayList<LuckyEvent>();
+
+    public static ArrayList<LuckyEvent> eventsAlways = new ArrayList<LuckyEvent>();
 
     public static void registerEvent(LuckyEventRarity rarity, LuckyEvent event) {
         switch (rarity) {
@@ -34,6 +37,9 @@ public class EventLuckyHandler {
                 break;
             case RARE:
                 eventsRare.add(event);
+                break;
+            case ALWAYS:
+                eventsAlways.add(event);
         }
     }
 
@@ -51,6 +57,8 @@ public class EventLuckyHandler {
                 return getRandomEventFromSet(eventsUncommon);
             case RARE:
                 return getRandomEventFromSet(eventsRare);
+            case ALWAYS:
+                return getRandomEventFromSet(eventsAlways);
         }
         return getRandomEventFromSet(eventsCommon);
     }
