@@ -1,12 +1,13 @@
 package com.drazisil.messy.event;
 
+import com.drazisil.messy.BlockSave;
 import com.drazisil.messy.Messy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -21,7 +22,7 @@ public class LuckyEventDisco implements LuckyEvent {
 
         Location standingLocation = location;
 
-        ArrayList<ArrayList<BlockData>> oldStateMatrix = new ArrayList<>();
+        ArrayList<ArrayList<BlockSave>> oldStateMatrix = new ArrayList<>();
 
         ArrayList<ArrayList<Block>> newBlockMatrix = new ArrayList<>();
 
@@ -39,10 +40,15 @@ public class LuckyEventDisco implements LuckyEvent {
 
         for (int z = 0; z <= 6; z++) {
             cursorLocation.setZ(startZ + z);
-            ArrayList<BlockData> blockRow = new ArrayList<>();
+            ArrayList<BlockSave> blockRow = new ArrayList<>();
             for (int x = 0; x <= 6; x++) {
                 cursorLocation.setX(startX + x);
-                blockRow.add(cursorLocation.getBlock().getBlockData());
+
+                Block block = cursorLocation.getBlock();
+                Material type = block.getType();
+                BlockState state = block.getState();
+
+                blockRow.add(new BlockSave(block, type, cursorLocation, state));
             }
             oldStateMatrix.add(blockRow);
 
@@ -66,6 +72,10 @@ public class LuckyEventDisco implements LuckyEvent {
             cursorLocation.setX(startZ + z);
             for (int x = 0; x <= 6; x++) {
                 cursorLocation.setX(startX + x);
+
+                // Attempt to clear drops
+                newBlockMatrix.get(z).get(x).getDrops().clear();
+
                 newBlockMatrix.get(z).get(x).setType(Material.REDSTONE_LAMP);
             }
 
@@ -84,7 +94,8 @@ public class LuckyEventDisco implements LuckyEvent {
             for (int z = 0; z <= 6; z++) {
                 for (int x = 0; x <= 6; x++) {
                     player.sendMessage("State: " + oldStateMatrix.get(z).get(x));
-                    newBlockMatrix.get(z).get(x).setBlockData(oldStateMatrix.get(z).get(x));
+                    newBlockMatrix.get(z).get(x).setType(oldStateMatrix.get(z).get(x).getType());
+                    oldStateMatrix.get(z).get(x).getState().update();
                 }
 
             }

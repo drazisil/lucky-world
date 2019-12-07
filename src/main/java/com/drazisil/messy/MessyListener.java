@@ -27,8 +27,12 @@ public class MessyListener implements Listener
     public void onBlockBreak(BlockBreakEvent event) {
 
 
+        System.out.println(event);
+
         // Fast fail if not a lucky event
         if (!shouldEvent(10, 3)) return;
+
+
 
 
         Player player = event.getPlayer();
