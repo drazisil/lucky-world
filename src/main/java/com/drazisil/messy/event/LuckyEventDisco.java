@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -72,28 +73,33 @@ public class LuckyEventDisco implements LuckyEvent {
             cursorLocation.setX(startZ + z);
             for (int x = 0; x <= 6; x++) {
                 cursorLocation.setX(startX + x);
-
+                Block block = newBlockMatrix.get(z).get(x);
                 // Attempt to clear drops
-                newBlockMatrix.get(z).get(x).getDrops().clear();
+                if (block.getType() == Material.FURNACE) {
+                    ((Furnace)block.getState()).getInventory().setFuel(null);
+                    ((Furnace)block.getState()).getInventory().setResult(null);
+                    ((Furnace)block.getState()).getInventory().setSmelting(null);
+                }
 
-                newBlockMatrix.get(z).get(x).setType(Material.REDSTONE_LAMP);
+
+                block.setType(Material.REDSTONE_LAMP);
             }
 
         }
 
-        player.sendMessage("Old Block Matrix: " + oldStateMatrix);
-        player.sendMessage("New Block Matrix: " + newBlockMatrix);
+//        player.sendMessage("Old Block Matrix: " + oldStateMatrix);
+//        player.sendMessage("New Block Matrix: " + newBlockMatrix);
 
         Messy plugin = Messy.getInstance();
 
-        player.sendMessage("Moo: " + plugin);
+//        player.sendMessage("Moo: " + plugin);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            player.sendMessage("pong");
-            player.sendMessage("Reset Block Matrix: " + oldStateMatrix);
+//            player.sendMessage("pong");
+//            player.sendMessage("Reset Block Matrix: " + oldStateMatrix);
             for (int z = 0; z <= 6; z++) {
                 for (int x = 0; x <= 6; x++) {
-                    player.sendMessage("State: " + oldStateMatrix.get(z).get(x));
+//                    player.sendMessage("State: " + oldStateMatrix.get(z).get(x));
                     newBlockMatrix.get(z).get(x).setType(oldStateMatrix.get(z).get(x).getType());
                     oldStateMatrix.get(z).get(x).getState().update();
                 }

@@ -27,8 +27,6 @@ public class MessyListener implements Listener
     public void onBlockBreak(BlockBreakEvent event) {
 
 
-        System.out.println(event);
-
         // Fast fail if not a lucky event
         if (!shouldEvent(10, 3)) return;
 
@@ -41,6 +39,15 @@ public class MessyListener implements Listener
 
         handleLuckyEvent(event, world, location, player);
     }
+
+//    @EventHandler
+//    public void onBlock(BlockDropItemEvent event) {
+//
+//
+//        System.out.println("Block: " + event.toString());
+//
+//
+//    }
 
 
 }

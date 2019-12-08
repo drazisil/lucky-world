@@ -31,5 +31,6 @@
     <orderEntry type="library" name="Maven: org.spigotmc:minecraft-server:1.14.4-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.14.4-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.bukkit:craftbukkit:1.14.4-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="ProtocolLib" level="project" />
   </component>
 </module>
