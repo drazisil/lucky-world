@@ -6,10 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Furnace;
+import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -76,21 +73,8 @@ public class LuckyEventDisco implements LuckyEvent {
                 cursorLocation.setX(startX + x);
                 Block block = newBlockMatrix.get(z).get(x);
 
-                // Attempt to clear drops if furnace
-                if (block.getType() == Material.FURNACE) {
-                    ((Furnace)block.getState()).getInventory().setFuel(null);
-                    ((Furnace)block.getState()).getInventory().setResult(null);
-                    ((Furnace)block.getState()).getInventory().setSmelting(null);
-                }
 
-                // Attempt to clear drops if chest
-                if (block.getType() == Material.CHEST) {
-                    ((Chest) block.getState()).getBlockInventory().clear();
-//                    Chest state = ((Chest) block.getState());
-//                    ItemStack[] newContents = new ItemStack[] {new ItemStack(Material.AIR)};
-//                    state.getBlockInventory().setContents(newContents);
-//                    state.update();
-                }
+                clearBlockInventory(block);
 
 
                 block.setType(Material.REDSTONE_LAMP);
@@ -112,5 +96,61 @@ public class LuckyEventDisco implements LuckyEvent {
             }
         }, 400L);
 
+    }
+
+    private void clearBlockInventory(Block block) {
+
+        // Attempt to clear drops if campfire
+        if ((block.getType() == Material.CAMPFIRE)) {
+            Campfire state = ((Campfire) block.getState());
+            state.setItem(0, null);
+            state.setItem(1, null);
+            state.setItem(2, null);
+            state.setItem(3, null);
+            state.update();
+
+        }
+
+
+        // Attempt to clear drops if jukebox
+        if ((block.getType() == Material.JUKEBOX)) {
+            ((Jukebox)block.getState()).setRecord(null);
+        }
+
+        // Attempt to clear drops if furnace
+        if ((block.getType() == Material.FURNACE)
+                || (block.getType() == Material.BLAST_FURNACE)
+                || (block.getType() == Material.SMOKER)) {
+            ((Furnace)block.getState()).getInventory().setFuel(null);
+            ((Furnace)block.getState()).getInventory().setResult(null);
+            ((Furnace)block.getState()).getInventory().setSmelting(null);
+        }
+
+        // Attempt to clear drops if chest
+        if ((block.getType() == Material.CHEST)
+                || (block.getType() == Material.TRAPPED_CHEST)) {
+            ((Chest) block.getState()).getBlockInventory().clear();
+        }
+
+        // Attempt to clear drops if brewing stand
+        if ((block.getType() == Material.BREWING_STAND)) {
+            ((BrewingStand) block.getState()).getInventory().setFuel(null);
+            ((BrewingStand) block.getState()).getInventory().setIngredient(null);
+            ((BrewingStand) block.getState()).getInventory().clear();
+        }
+
+
+        // Attempt to clear drops if container
+        switch (block.getType()) {
+            case DISPENSER:
+            case DROPPER:
+            case BARREL:
+            case HOPPER:
+                ((Dispenser) block.getState()).getInventory().clear();
+                break;
+            case LECTERN:
+                ((Lectern) block.getState()).getInventory().clear();
+                break;
+        }
     }
 }
