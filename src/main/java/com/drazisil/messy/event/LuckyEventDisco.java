@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.*;
+import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 
 public class LuckyEventDisco implements LuckyEvent {
 
+
+    private Messy plugin = Messy.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
@@ -78,26 +81,48 @@ public class LuckyEventDisco implements LuckyEvent {
 
 
                 block.setType(Material.REDSTONE_LAMP);
+
             }
 
         }
 
 
 
-        Messy plugin = Messy.getInstance();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            for (int z = 0; z <= 6; z++) {
-                for (int x = 0; x <= 6; x++) {
-                    newBlockMatrix.get(z).get(x).setType(oldStateMatrix.get(z).get(x).getType());
-                    oldStateMatrix.get(z).get(x).getState().update();
-                }
+                plugin, () -> {
+                    for (int z = 0; z <= 6; z++) {
+                        cursorLocation.setX(startZ + z);
+                        for (int x = 0; x <= 6; x++) {
+                            cursorLocation.setX(startX + x);
+                            Block block = newBlockMatrix.get(z).get(x);
 
-            }
-        }, 400L);
+                            BlockState state = block.getState();
+
+                            Lightable data = ((Lightable) state.getBlockData());
+                            data.setLit(true);
+                            state.setBlockData(data);
+                            state.update(true, false);
+                        }
+
+                    }
+                }, 40L);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> restoreBlockState(newBlockMatrix, oldStateMatrix), 300L);
 
     }
 
+    public void restoreBlockState(ArrayList<ArrayList<Block>> blockMatrix,
+                                  ArrayList<ArrayList<BlockSave>> blockSaveMatrix) {
+        for (int z = 0; z <= 6; z++) {
+            for (int x = 0; x <= 6; x++) {
+                blockMatrix.get(z).get(x).setType(blockSaveMatrix.get(z).get(x).getType());
+                blockSaveMatrix.get(z).get(x).getState().update();
+            }
+
+        }
+    }
     private void clearBlockInventory(Block block) {
 
         // Attempt to clear drops if campfire
@@ -143,10 +168,16 @@ public class LuckyEventDisco implements LuckyEvent {
         // Attempt to clear drops if container
         switch (block.getType()) {
             case DISPENSER:
-            case DROPPER:
-            case BARREL:
-            case HOPPER:
                 ((Dispenser) block.getState()).getInventory().clear();
+                break;
+            case BARREL:
+                ((Barrel) block.getState()).getInventory().clear();
+                break;
+            case HOPPER:
+                ((Hopper) block.getState()).getInventory().clear();
+                break;
+            case DROPPER:
+                ((Dropper) block.getState()).getInventory().clear();
                 break;
             case LECTERN:
                 ((Lectern) block.getState()).getInventory().clear();
