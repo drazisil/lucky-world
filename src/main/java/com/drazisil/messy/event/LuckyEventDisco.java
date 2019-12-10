@@ -28,46 +28,82 @@ public class LuckyEventDisco implements LuckyEvent {
 //        ArrayList<ArrayList<Block>> newBlockMatrix = new ArrayList<>();
 
         // Drop it by one
-        Location standingLocation1 = location.clone();
-        standingLocation1.setY(standingLocation1.getY() - 1);
-
-        Location startLocation1 = standingLocation1.clone();
+        Location startLocation1 = location.clone();
+        startLocation1.setY(location.getY() - 1);
         startLocation1.setX(startLocation1.getX() - 3);
         startLocation1.setZ(startLocation1.getZ() - 3);
 
-        System.out.println("Location: " + location.toString());
-        System.out.println("startLocation1: " + startLocation1.toString());
-        ArrayList<ArrayList<BlockSave>> oldStateMatrix = generateBlockSaveMatrix(startLocation1);
+//        System.out.println("Location: " + location.toString());
+//        System.out.println("startLocation1: " + startLocation1.toString());
+        ArrayList<ArrayList<BlockSave>> oldStateMatrix1 = generateBlockSaveMatrix(startLocation1);
 
-        Location standingLocation2 = location.clone();
-        standingLocation2.setY(standingLocation2.getY() - 1);
+//        Location standingLocation2 = location.clone();
+//        standingLocation2.setY(standingLocation2.getY() - 1);
+//
+//        Location startLocation2 = standingLocation2.clone();
+//        startLocation2.setX(startLocation2.getX() - 3);
+//        startLocation2.setZ(startLocation2.getZ() - 3);
+//
+//
+//        System.out.println("Location: " + location.toString());
+//        System.out.println("startLocation2: " + startLocation2.toString());
+        ArrayList<ArrayList<Block>> newBlockMatrix1 = generateBlockMatrix(startLocation1);
 
-        Location startLocation2 = standingLocation2.clone();
+        // Drop it by one
+        Location startLocation2 = location.clone();
+        startLocation2.setY(location.getY() - 2);
         startLocation2.setX(startLocation2.getX() - 3);
         startLocation2.setZ(startLocation2.getZ() - 3);
 
+        ArrayList<ArrayList<BlockSave>> oldStateMatrix2 = generateBlockSaveMatrix(startLocation2);
+        ArrayList<ArrayList<Block>> newBlockMatrix2 = generateBlockMatrix(startLocation2);
 
-        System.out.println("Location: " + location.toString());
-        System.out.println("startLocation2: " + startLocation2.toString());
-        ArrayList<ArrayList<Block>> newBlockMatrix = generateBlockMatrix(startLocation2);
 
         // ============================================
 
+
         Location cursorLocation1 = startLocation1.clone();
 
-        double startX = startLocation1.getX();
-        double startZ = startLocation1.getZ();
+        double startX1 = startLocation1.getX();
+        double startZ1 = startLocation1.getZ();
 
-
-        System.out.println("Location: " + location.toString());
-        System.out.println("cursorLocation1: " + cursorLocation1.toString());
+//
+//        System.out.println("Location: " + location.toString());
+//        System.out.println("cursorLocation1: " + cursorLocation1.toString());
 
 
         for (int z = 0; z <= 6; z++) {
-            cursorLocation1.setX(startZ + z);
+            cursorLocation1.setX(startZ1 + z);
             for (int x = 0; x <= 6; x++) {
-                cursorLocation1.setX(startX + x);
-                Block block = newBlockMatrix.get(z).get(x);
+                cursorLocation1.setX(startX1 + x);
+                Block block = newBlockMatrix1.get(z).get(x);
+
+
+                clearBlockInventory(block);
+
+
+                block.setType(Material.GLASS);
+
+            }
+
+        }
+
+
+        Location cursorLocation2 = startLocation2.clone();
+
+        double startX2 = startLocation2.getX();
+        double startZ2 = startLocation2.getZ();
+
+//
+//        System.out.println("Location: " + location.toString());
+//        System.out.println("cursorLocation1: " + cursorLocation1.toString());
+
+
+        for (int z = 0; z <= 6; z++) {
+            cursorLocation2.setX(startZ2 + z);
+            for (int x = 0; x <= 6; x++) {
+                cursorLocation2.setX(startX2 + x);
+                Block block = newBlockMatrix2.get(z).get(x);
 
 
                 clearBlockInventory(block);
@@ -102,7 +138,10 @@ public class LuckyEventDisco implements LuckyEvent {
 //                }, 40L);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix, oldStateMatrix), 300L);
+                plugin, () -> restoreBlockState(newBlockMatrix1, oldStateMatrix1), 300L);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> restoreBlockState(newBlockMatrix2, oldStateMatrix2), 300L);
 
     }
 
