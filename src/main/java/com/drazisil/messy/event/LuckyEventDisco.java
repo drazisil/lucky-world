@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.*;
-import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -22,24 +21,116 @@ public class LuckyEventDisco implements LuckyEvent {
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
-        Location standingLocation = location;
 
-        ArrayList<ArrayList<BlockSave>> oldStateMatrix = new ArrayList<>();
 
-        ArrayList<ArrayList<Block>> newBlockMatrix = new ArrayList<>();
+//        ArrayList<ArrayList<BlockSave>> oldStateMatrix = new ArrayList<>();
+
+//        ArrayList<ArrayList<Block>> newBlockMatrix = new ArrayList<>();
 
         // Drop it by one
-        standingLocation.setY(standingLocation.getY() - 1);
+        Location standingLocation1 = location.clone();
+        standingLocation1.setY(standingLocation1.getY() - 1);
 
-        Location startLocation = standingLocation;
-        startLocation.setX(startLocation.getX() - 3);
-        startLocation.setZ(startLocation.getZ() - 3);
+        Location startLocation1 = standingLocation1.clone();
+        startLocation1.setX(startLocation1.getX() - 3);
+        startLocation1.setZ(startLocation1.getZ() - 3);
 
-        Location cursorLocation = startLocation;
+        System.out.println("Location: " + location.toString());
+        System.out.println("startLocation1: " + startLocation1.toString());
+        ArrayList<ArrayList<BlockSave>> oldStateMatrix = generateBlockSaveMatrix(startLocation1);
+
+        Location standingLocation2 = location.clone();
+        standingLocation2.setY(standingLocation2.getY() - 1);
+
+        Location startLocation2 = standingLocation2.clone();
+        startLocation2.setX(startLocation2.getX() - 3);
+        startLocation2.setZ(startLocation2.getZ() - 3);
+
+
+        System.out.println("Location: " + location.toString());
+        System.out.println("startLocation2: " + startLocation2.toString());
+        ArrayList<ArrayList<Block>> newBlockMatrix = generateBlockMatrix(startLocation2);
+
+        // ============================================
+
+        Location cursorLocation1 = startLocation1.clone();
+
+        double startX = startLocation1.getX();
+        double startZ = startLocation1.getZ();
+
+
+        System.out.println("Location: " + location.toString());
+        System.out.println("cursorLocation1: " + cursorLocation1.toString());
+
+
+        for (int z = 0; z <= 6; z++) {
+            cursorLocation1.setX(startZ + z);
+            for (int x = 0; x <= 6; x++) {
+                cursorLocation1.setX(startX + x);
+                Block block = newBlockMatrix.get(z).get(x);
+
+
+                clearBlockInventory(block);
+
+
+                block.setType(Material.SEA_LANTERN);
+
+            }
+
+        }
+
+
+
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(
+//
+//                plugin, () -> {
+//                    for (int z = 0; z <= 6; z++) {
+//                        cursorLocation.setX(startZ + z);
+//                        for (int x = 0; x <= 6; x++) {
+//                            cursorLocation.setX(startX + x);
+//                            Block block = newBlockMatrix.get(z).get(x);
+//
+//                            BlockState state = block.getState();
+//
+//                            Lightable data = ((Lightable) state.getBlockData());
+//                            data.setLit(true);
+//                            state.setBlockData(data);
+//                            state.update(true, false);
+//                        }
+//
+//                    }
+//                }, 40L);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> restoreBlockState(newBlockMatrix, oldStateMatrix), 300L);
+
+    }
+
+    private ArrayList<ArrayList<Block>> generateBlockMatrix(Location startLocation) {
+        ArrayList<ArrayList<Block>> blockMatrix = new ArrayList<>();
 
         double startX = startLocation.getX();
         double startZ = startLocation.getZ();
+        Location cursorLocation = startLocation.clone();
+        for (int z = 0; z <= 6; z++) {
+            cursorLocation.setZ(startZ + z);
+            ArrayList<Block> blockRow = new ArrayList<>();
+            for (int x = 0; x <= 6; x++) {
+                cursorLocation.setX(startX + x);
+                blockRow.add(cursorLocation.getBlock());
+            }
+            blockMatrix.add(blockRow);
 
+        }
+        return blockMatrix;
+    }
+
+    private ArrayList<ArrayList<BlockSave>> generateBlockSaveMatrix(Location startLocation) {
+        ArrayList<ArrayList<BlockSave>> blockSaveMatrix = new ArrayList<>();
+
+        double startX = startLocation.getX();
+        double startZ = startLocation.getZ();
+        Location cursorLocation = startLocation.clone();
         for (int z = 0; z <= 6; z++) {
             cursorLocation.setZ(startZ + z);
             ArrayList<BlockSave> blockRow = new ArrayList<>();
@@ -52,65 +143,10 @@ public class LuckyEventDisco implements LuckyEvent {
 
                 blockRow.add(new BlockSave(block, type, cursorLocation, state));
             }
-            oldStateMatrix.add(blockRow);
+            blockSaveMatrix.add(blockRow);
 
         }
-
-        for (int z = 0; z <= 6; z++) {
-            cursorLocation.setZ(startZ + z);
-            ArrayList<Block> blockRow = new ArrayList<>();
-            for (int x = 0; x <= 6; x++) {
-                cursorLocation.setX(startX + x);
-                blockRow.add(cursorLocation.getBlock());
-            }
-            newBlockMatrix.add(blockRow);
-
-        }
-
-        // ============================================
-
-
-        for (int z = 0; z <= 6; z++) {
-            cursorLocation.setX(startZ + z);
-            for (int x = 0; x <= 6; x++) {
-                cursorLocation.setX(startX + x);
-                Block block = newBlockMatrix.get(z).get(x);
-
-
-                clearBlockInventory(block);
-
-
-                block.setType(Material.REDSTONE_LAMP);
-
-            }
-
-        }
-
-
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-
-                plugin, () -> {
-                    for (int z = 0; z <= 6; z++) {
-                        cursorLocation.setX(startZ + z);
-                        for (int x = 0; x <= 6; x++) {
-                            cursorLocation.setX(startX + x);
-                            Block block = newBlockMatrix.get(z).get(x);
-
-                            BlockState state = block.getState();
-
-                            Lightable data = ((Lightable) state.getBlockData());
-                            data.setLit(true);
-                            state.setBlockData(data);
-                            state.update(true, false);
-                        }
-
-                    }
-                }, 40L);
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix, oldStateMatrix), 300L);
-
+        return  blockSaveMatrix;
     }
 
     public void restoreBlockState(ArrayList<ArrayList<Block>> blockMatrix,
