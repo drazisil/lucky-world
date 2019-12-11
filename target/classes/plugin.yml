@@ -1,8 +1,0 @@
-name: Messy
-version: 1.0-SNAPSHOT
-main: com.drazisil.messy.Messy
-api-version: 1.13
-commands:
-   lucky:
-      description: Force a LuckyWorld event
-      usage: /lucky luckyForce

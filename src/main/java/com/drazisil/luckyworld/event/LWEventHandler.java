@@ -8,9 +8,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.drazisil.luckyworld.Messy.logger;
+import static com.drazisil.luckyworld.LuckyWorld.logger;
 
-public class EventLuckyHandler {
+public class LWEventHandler {
 
     public enum LuckyEventRarity {
         COMMON,

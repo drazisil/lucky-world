@@ -1,7 +1,7 @@
 package com.drazisil.luckyworld.event;
 
 import com.drazisil.luckyworld.BlockSave;
-import com.drazisil.luckyworld.Messy;
+import com.drazisil.luckyworld.LuckyWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class LuckyEventDisco implements LuckyEvent {
 
 
-    private Messy plugin = Messy.getInstance();
+    private LuckyWorld plugin = LuckyWorld.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {

@@ -9,17 +9,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import static com.drazisil.luckyworld.event.EventLuckyHandler.handleLuckyEvent;
-import static com.drazisil.luckyworld.event.EventLuckyHandler.shouldEvent;
+import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
+import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 
 
-public class MessyListener implements Listener
+public class LWListener implements Listener
 
 
 {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage("Welcome, " + event.getPlayer().getName() + " to...luckyworld!");
+        event.setJoinMessage("Welcome, " + event.getPlayer().getName() + " to..." + LuckyWorld.name + "!");
 
     }
 
@@ -39,15 +39,6 @@ public class MessyListener implements Listener
 
         handleLuckyEvent(event, world, location, player);
     }
-
-//    @EventHandler
-//    public void onBlock(BlockDropItemEvent event) {
-//
-//
-//        System.out.println("Block: " + event.toString());
-//
-//
-//    }
 
 
 }
