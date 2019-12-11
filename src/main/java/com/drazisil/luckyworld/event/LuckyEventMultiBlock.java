@@ -1,6 +1,6 @@
-package com.drazisil.messy.event;
+package com.drazisil.luckyworld.event;
 
-import com.drazisil.messy.event.EventLuckyHandler.LuckyEventRarity;
+import com.drazisil.luckyworld.event.EventLuckyHandler.LuckyEventRarity;
 import com.google.common.collect.Iterables;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
-import static com.drazisil.messy.event.EventLuckyHandler.LuckyEventRarity.COMMON;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.LuckyEventRarity.COMMON;
 
 public class LuckyEventMultiBlock implements LuckyEvent {
 

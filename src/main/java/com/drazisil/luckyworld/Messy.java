@@ -1,11 +1,11 @@
-package com.drazisil.messy;
+package com.drazisil.luckyworld;
 
-import com.drazisil.messy.event.*;
+import com.drazisil.luckyworld.event.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static com.drazisil.messy.event.EventLuckyHandler.LuckyEventRarity.*;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.LuckyEventRarity.*;
 
 public final class Messy extends JavaPlugin {
 
@@ -34,7 +34,7 @@ public final class Messy extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MessyListener(), this);
 
         // Register command manager
-        this.getCommand("messy").setExecutor(new MessyCommands());
+        this.getCommand("lucky").setExecutor(new MessyCommands());
 
     }
 

@@ -1,17 +1,19 @@
-package com.drazisil.messy.event;
+package com.drazisil.luckyworld.event;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-public class LuckyEventJumpBoost implements LuckyEvent {
+public class LuckyEventChickens implements LuckyEvent {
+
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 400, 31));
 
+        for (int i = 1; i <= 50; i++) {
+            world.spawn(location, Chicken.class);
+        }
     }
 }

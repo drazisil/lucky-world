@@ -1,4 +1,4 @@
-package com.drazisil.messy;
+package com.drazisil.luckyworld;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

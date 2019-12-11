@@ -1,4 +1,4 @@
-package com.drazisil.messy.event;
+package com.drazisil.luckyworld.event;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.drazisil.messy.Messy.logger;
+import static com.drazisil.luckyworld.Messy.logger;
 
 public class EventLuckyHandler {
 

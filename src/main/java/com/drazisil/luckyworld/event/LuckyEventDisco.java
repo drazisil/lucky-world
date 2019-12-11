@@ -1,7 +1,7 @@
-package com.drazisil.messy.event;
+package com.drazisil.luckyworld.event;
 
-import com.drazisil.messy.BlockSave;
-import com.drazisil.messy.Messy;
+import com.drazisil.luckyworld.BlockSave;
+import com.drazisil.luckyworld.Messy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

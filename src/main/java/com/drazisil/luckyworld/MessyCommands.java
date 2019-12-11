@@ -1,6 +1,6 @@
-package com.drazisil.messy;
+package com.drazisil.luckyworld;
 
-import com.drazisil.messy.event.LuckyEvent;
+import com.drazisil.luckyworld.event.LuckyEvent;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -8,10 +8,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.drazisil.messy.Messy.instance;
-import static com.drazisil.messy.Messy.logger;
-import static com.drazisil.messy.event.EventLuckyHandler.LuckyEventRarity.ALWAYS;
-import static com.drazisil.messy.event.EventLuckyHandler.getRandomEvent;
+import static com.drazisil.luckyworld.Messy.instance;
+import static com.drazisil.luckyworld.Messy.logger;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.LuckyEventRarity.ALWAYS;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.getRandomEvent;
 
 public class MessyCommands implements CommandExecutor {
 
@@ -20,7 +20,7 @@ public class MessyCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        logger.info("Detected messy command sent with the following args: " + String.join(" ", args));
+        logger.info("Detected luckyworld command sent with the following args: " + String.join(" ", args));
 
         if (args.length == 0) {
             sendMessyMessage(sender, "That's...not quite correct");

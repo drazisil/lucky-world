@@ -1,8 +1,8 @@
-name: Messy
+name: ${project.name}
 version: ${project.version}
-main: com.drazisil.messy.Messy
+main: ${project.groupId}.${project.artifactId}.${project.name}
 api-version: 1.13
 commands:
-   messy:
-      description: Messy Commands
-      usage: /messy
+   lucky:
+      description: Force a LuckyWorld event
+      usage: /lucky luckyForce

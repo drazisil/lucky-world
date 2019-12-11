@@ -1,4 +1,4 @@
-package com.drazisil.messy;
+package com.drazisil.luckyworld;
 
 
 import org.bukkit.Location;
@@ -9,8 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import static com.drazisil.messy.event.EventLuckyHandler.handleLuckyEvent;
-import static com.drazisil.messy.event.EventLuckyHandler.shouldEvent;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.handleLuckyEvent;
+import static com.drazisil.luckyworld.event.EventLuckyHandler.shouldEvent;
 
 
 public class MessyListener implements Listener
@@ -19,7 +19,7 @@ public class MessyListener implements Listener
 {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage("Welcome, " + event.getPlayer().getName() + " to...messy!");
+        event.setJoinMessage("Welcome, " + event.getPlayer().getName() + " to...luckyworld!");
 
     }
 

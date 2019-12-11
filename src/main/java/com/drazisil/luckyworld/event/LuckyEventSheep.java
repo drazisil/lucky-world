@@ -1,4 +1,4 @@
-package com.drazisil.messy.event;
+package com.drazisil.luckyworld.event;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
