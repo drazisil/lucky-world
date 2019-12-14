@@ -9,23 +9,51 @@ import org.bukkit.World;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+
+import static com.drazisil.luckyworld.event.LWEventHandler.getRandomMaterial;
 
 
 public class LuckyEventDisco implements LuckyEvent {
 
 
+    public static ArrayList<Material> coloredGlassBlocks = new ArrayList<Material>();
+
+
+    public LuckyEventDisco() {
+        coloredGlassBlocks.add(Material.RED_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.LIME_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.YELLOW_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.LIGHT_BLUE_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.MAGENTA_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.ORANGE_STAINED_GLASS);
+        coloredGlassBlocks.add(Material.PURPLE_STAINED_GLASS);
+    }
+
+
     private LuckyWorld plugin = LuckyWorld.getInstance();
+
+    private int colorChangeCount = 0;
+
+    public int getColorChangeCount() {
+        return  this.colorChangeCount;
+    }
+
+    public void incColorChangeCount() {
+        this.colorChangeCount++;
+    }
+
+    public void resetColorChangeCount() {
+        this.colorChangeCount = 0;
+    }
+
+    private BukkitTask setGlassColorTask;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
-
-
-//        ArrayList<ArrayList<BlockSave>> oldStateMatrix = new ArrayList<>();
-
-//        ArrayList<ArrayList<Block>> newBlockMatrix = new ArrayList<>();
 
         // Drop it by one
         Location startLocation1 = location.clone();
@@ -33,20 +61,10 @@ public class LuckyEventDisco implements LuckyEvent {
         startLocation1.setX(startLocation1.getX() - 3);
         startLocation1.setZ(startLocation1.getZ() - 3);
 
-//        System.out.println("Location: " + location.toString());
-//        System.out.println("startLocation1: " + startLocation1.toString());
+
         ArrayList<ArrayList<BlockSave>> oldStateMatrix1 = generateBlockSaveMatrix(startLocation1);
 
-//        Location standingLocation2 = location.clone();
-//        standingLocation2.setY(standingLocation2.getY() - 1);
-//
-//        Location startLocation2 = standingLocation2.clone();
-//        startLocation2.setX(startLocation2.getX() - 3);
-//        startLocation2.setZ(startLocation2.getZ() - 3);
-//
-//
-//        System.out.println("Location: " + location.toString());
-//        System.out.println("startLocation2: " + startLocation2.toString());
+
         ArrayList<ArrayList<Block>> newBlockMatrix1 = generateBlockMatrix(startLocation1);
 
         // Drop it by one
@@ -62,42 +80,10 @@ public class LuckyEventDisco implements LuckyEvent {
         // ============================================
 
 
-        Location cursorLocation1 = startLocation1.clone();
-
-        double startX1 = startLocation1.getX();
-        double startZ1 = startLocation1.getZ();
-
-//
-//        System.out.println("Location: " + location.toString());
-//        System.out.println("cursorLocation1: " + cursorLocation1.toString());
-
-
-        for (int z = 0; z <= 6; z++) {
-            cursorLocation1.setX(startZ1 + z);
-            for (int x = 0; x <= 6; x++) {
-                cursorLocation1.setX(startX1 + x);
-                Block block = newBlockMatrix1.get(z).get(x);
-
-
-                clearBlockInventory(block);
-
-
-                block.setType(Material.GLASS);
-
-            }
-
-        }
-
-
         Location cursorLocation2 = startLocation2.clone();
 
         double startX2 = startLocation2.getX();
         double startZ2 = startLocation2.getZ();
-
-//
-//        System.out.println("Location: " + location.toString());
-//        System.out.println("cursorLocation1: " + cursorLocation1.toString());
-
 
         for (int z = 0; z <= 6; z++) {
             cursorLocation2.setX(startZ2 + z);
@@ -116,32 +102,49 @@ public class LuckyEventDisco implements LuckyEvent {
         }
 
 
-
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(
-//
-//                plugin, () -> {
-//                    for (int z = 0; z <= 6; z++) {
-//                        cursorLocation.setX(startZ + z);
-//                        for (int x = 0; x <= 6; x++) {
-//                            cursorLocation.setX(startX + x);
-//                            Block block = newBlockMatrix.get(z).get(x);
-//
-//                            BlockState state = block.getState();
-//
-//                            Lightable data = ((Lightable) state.getBlockData());
-//                            data.setLit(true);
-//                            state.setBlockData(data);
-//                            state.update(true, false);
-//                        }
-//
-//                    }
-//                }, 40L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> restoreBlockState(newBlockMatrix1, oldStateMatrix1), 320);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix1, oldStateMatrix1), 300L);
+                plugin, () -> restoreBlockState(newBlockMatrix2, oldStateMatrix2), 320);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix2, oldStateMatrix2), 300L);
+        setGlassColorTask = Bukkit.getScheduler().runTaskTimer(plugin,
+                () -> setGlassColors(newBlockMatrix1, startLocation1), 0, 20);
+
+
+    }
+
+
+    public void setGlassColors(ArrayList<ArrayList<Block>> blockMatrix, Location startLocation){
+
+        double startX1 = startLocation.getX();
+        double startZ1 = startLocation.getZ();
+
+        Location cursorLocation = startLocation.clone();
+        for (int z = 0; z <= 6; z++) {
+            cursorLocation.setX(startZ1 + z);
+            for (int x = 0; x <= 6; x++) {
+                cursorLocation.setX(startX1 + x);
+                Block block = blockMatrix.get(z).get(x);
+
+
+                clearBlockInventory(block);
+
+                final Material color = getRandomMaterial(coloredGlassBlocks);
+
+                block.setType(color);
+
+
+            }
+
+        }
+
+        if (getColorChangeCount() >= 15) {
+            setGlassColorTask.cancel();
+            resetColorChangeCount();
+
+        }
+        incColorChangeCount();
 
     }
 
@@ -198,6 +201,8 @@ public class LuckyEventDisco implements LuckyEvent {
 
         }
     }
+
+
     private void clearBlockInventory(Block block) {
 
         // Attempt to clear drops if campfire

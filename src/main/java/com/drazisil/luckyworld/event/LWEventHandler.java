@@ -1,6 +1,7 @@
 package com.drazisil.luckyworld.event;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -42,6 +43,13 @@ public class LWEventHandler {
                 eventsAlways.add(event);
         }
     }
+
+    public static Material getRandomMaterial(ArrayList<Material> set) {
+        int max = set.size();
+        int randIndex = randInt(max);
+        return set.get(randIndex);
+    }
+
 
     private static LuckyEvent getRandomEventFromSet(ArrayList<LuckyEvent> set) {
         int max = set.size();
