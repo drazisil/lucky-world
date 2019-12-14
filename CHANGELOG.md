@@ -13,3 +13,7 @@ Start of changelog
 * Add readme
 * list commands
 
+### 0.0.3
+
+* Improve command usage help
+
