@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.SkeletonHorse;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class LuckyEventUndeadHorse implements LuckyEvent {
+public class LuckyEventUndeadHorse extends LuckyEvent {
 
 
     @Override

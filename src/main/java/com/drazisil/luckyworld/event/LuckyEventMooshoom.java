@@ -6,7 +6,7 @@ import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class LuckyEventMooshoom implements LuckyEvent {
+public class LuckyEventMooshoom extends LuckyEvent {
 
 
     @Override

@@ -15,7 +15,7 @@ import java.util.Collection;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.COMMON;
 
-public class LuckyEventMultiBlock implements LuckyEvent {
+public class LuckyEventMultiBlock extends LuckyEvent {
 
     public LuckyEventRarity rarity = COMMON;
 

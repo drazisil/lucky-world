@@ -18,18 +18,30 @@ public final class LuckyWorld extends JavaPlugin {
 
         instance = this;
 
-        LWEventHandler.registerEvent(COMMON, new LuckyEventMultiBlock());
-        LWEventHandler.registerEvent(COMMON, new LuckyEventUndeadHorse());
-        LWEventHandler.registerEvent(COMMON, new LuckyEventSheep());
-        LWEventHandler.registerEvent(COMMON, new LuckyEventParrotDance());
-        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventJumpBoost());
-        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventMooshoom());
-        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventChickens());
-        LWEventHandler.registerEvent(RARE, new LuckyEventSlowFallGhast());
-        LWEventHandler.registerEvent(RARE, new LuckyEventBang());
-        LWEventHandler.registerEvent(RARE, new LuckyEventSealantern());
-        LWEventHandler.registerEvent(RARE, new LuckyEventDisco());
-        LWEventHandler.registerEvent(RARE, new LuckyEventEndTimes());
+        LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
+                new LuckyEventMultiBlock(), "multiblock"));
+        LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
+                new LuckyEventUndeadHorse(), "undead_horse"));
+        LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
+                new LuckyEventSheep(), "sheep"));
+        LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
+                new LuckyEventParrotDance(), "parrot_dance"));
+        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventEntry(
+                new LuckyEventJumpBoost(), "jump"));
+        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventEntry(
+                new LuckyEventMooshoom(), "mooshoom"));
+        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventEntry(
+                new LuckyEventChickens(), "chickens"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventSlowFallGhast(), "ghast"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventBang(), "tnt"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventSealantern(), "sea_lantern"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventDisco(), "disco"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventEndTimes(), "end_times"));
 
         getServer().getPluginManager().registerEvents(new LWListener(), this);
 

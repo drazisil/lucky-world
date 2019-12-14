@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import static org.bukkit.Bukkit.dispatchCommand;
 import static org.bukkit.Bukkit.getConsoleSender;
 
-public class LuckyEventEndTimes implements LuckyEvent {
+public class LuckyEventEndTimes extends LuckyEvent {
 
     private LuckyWorld plugin = LuckyWorld.getInstance();
 

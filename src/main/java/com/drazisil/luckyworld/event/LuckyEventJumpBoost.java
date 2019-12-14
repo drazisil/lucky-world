@@ -7,7 +7,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class LuckyEventJumpBoost implements LuckyEvent {
+public class LuckyEventJumpBoost extends LuckyEvent {
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {

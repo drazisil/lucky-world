@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class LuckyEventSheep implements LuckyEvent {
+public class LuckyEventSheep extends LuckyEvent {
 
 
     @Override

@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 
-public class LuckyEventParrotDance implements LuckyEvent {
+public class LuckyEventParrotDance extends LuckyEvent {
 
 
     @Override

@@ -1,6 +1,6 @@
 package com.drazisil.luckyworld;
 
-import com.drazisil.luckyworld.event.LuckyEvent;
+import com.drazisil.luckyworld.event.LuckyEventEntry;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -8,10 +8,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.drazisil.luckyworld.LuckyWorld.instance;
 import static com.drazisil.luckyworld.LuckyWorld.logger;
-import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.ALWAYS;
-import static com.drazisil.luckyworld.event.LWEventHandler.getRandomEvent;
+import static com.drazisil.luckyworld.event.LWEventHandler.*;
+import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
 
 public class LWCommands implements CommandExecutor {
 
@@ -31,30 +30,90 @@ public class LWCommands implements CommandExecutor {
 
         String commandName = args[0];
 
+        Player player = ((Player) sender).getPlayer();
+        assert player != null;
+
+        Location location = player.getLocation();
+        World world = player.getWorld();
+        String rarity;
+
         switch (commandName) {
+            case "listEvents":
+                if (args.length < 2) {
+                    sender.sendMessage("That's...not quite correct");
+                    return false;
+                }
+
+
+                rarity = args[1];
+
+                switch (rarity.toLowerCase()) {
+                    case "common":
+                        sender.sendMessage(getEventsNamesByType(COMMON).toString());
+                        return true;
+                    case "uncommon":
+                        sender.sendMessage(getEventsNamesByType(UNCOMMON).toString());
+                        return true;
+                    case "rare":
+                        sender.sendMessage(getEventsNamesByType(RARE).toString());
+                        return true;
+                    case "always":
+                        sender.sendMessage(getEventsNamesByType(ALWAYS).toString());
+                        return true;
+                    default:
+                        sender.sendMessage("That's not a valid rarity, please try again.");
+                        return false;
+                }
+
+            case "triggerEvent":
+                if (args.length < 3) {
+                    sender.sendMessage("That's...not quite correct");
+                    return false;
+                }
+
+
+                rarity = args[1];
+                String eventName = args[2].toLowerCase();
+
+                LuckyEventEntry eventEntry;
+
+                switch (rarity.toLowerCase()) {
+                    case "common":
+                        eventEntry = getEventByRarityAndName(COMMON, eventName);
+                        break;
+                    case "uncommon":
+                        eventEntry = getEventByRarityAndName(UNCOMMON, eventName);
+                        break;
+                    case "rare":
+                        eventEntry = getEventByRarityAndName(RARE, eventName);
+                        break;
+                    case "always":
+                        eventEntry = getEventByRarityAndName(ALWAYS, eventName);
+                        break;
+                    default:
+                        sender.sendMessage("That's not a valid rarity, please try again.");
+                        return false;
+                }
+
+                if (eventEntry == null) {
+                    sender.sendMessage("Unable to locate a event by that rarity and name.");
+                    return false;
+                }
+
+                eventEntry.event.doAction(null, world, location, player);
+                return true;
+
+
+
             case "luckyForce":
-                Player player = ((Player) sender).getPlayer();
-                assert player != null;
-                Location location = player.getLocation();
-                World world = player.getWorld();
-                LuckyEvent newEvent = getRandomEvent(ALWAYS);
+                LuckyEventEntry newEvent = getRandomEvent(ALWAYS);
                 player.sendMessage("Hello, you requested a " + newEvent);
-                newEvent.doAction(null, world, location, player);
+                newEvent.event.doAction(null, world, location, player);
                 return true;
             default:
                 return false;
         }
 
-    }
-
-
-
-    void sendMessyMessage(CommandSender sender, String message) {
-        if (sender instanceof Player) {
-            sender.sendMessage(instance.name + ": " + message);
-        } else {
-            logger.info(message);
-        }
     }
 
 }

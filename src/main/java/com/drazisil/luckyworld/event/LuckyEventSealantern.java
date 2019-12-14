@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class LuckyEventSealantern implements LuckyEvent {
+public class LuckyEventSealantern extends LuckyEvent {
 
 
     @Override

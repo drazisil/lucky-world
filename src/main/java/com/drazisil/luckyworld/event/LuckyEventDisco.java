@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import static com.drazisil.luckyworld.event.LWEventHandler.getRandomMaterial;
 
 
-public class LuckyEventDisco implements LuckyEvent {
+public class LuckyEventDisco extends LuckyEvent {
 
 
     public static ArrayList<Material> coloredGlassBlocks = new ArrayList<Material>();

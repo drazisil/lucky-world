@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import static org.bukkit.entity.EntityType.PRIMED_TNT;
 
-public class LuckyEventBang implements LuckyEvent {
+public class LuckyEventBang extends LuckyEvent {
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
