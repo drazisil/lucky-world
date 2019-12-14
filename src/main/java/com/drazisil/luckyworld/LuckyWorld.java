@@ -28,8 +28,8 @@ public final class LuckyWorld extends JavaPlugin {
         LWEventHandler.registerEvent(RARE, new LuckyEventSlowFallGhast());
         LWEventHandler.registerEvent(RARE, new LuckyEventBang());
         LWEventHandler.registerEvent(RARE, new LuckyEventSealantern());
-
-        LWEventHandler.registerEvent(ALWAYS, new LuckyEventDisco());
+        LWEventHandler.registerEvent(RARE, new LuckyEventDisco());
+        LWEventHandler.registerEvent(RARE, new LuckyEventEndTimes());
 
         getServer().getPluginManager().registerEvents(new LWListener(), this);
 
