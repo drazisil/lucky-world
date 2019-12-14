@@ -17,3 +17,7 @@ Start of changelog
 
 * Improve command usage help
 
+### 0.0.4
+
+* fleshed out the plugin file
+* improved command usage help

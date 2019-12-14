@@ -1,11 +1,16 @@
 name: ${project.name}
 version: ${project.version}
 main: ${project.groupId}.${project.artifactId}.${project.name}
+authors:
+  - Drazisil
+  - Xander_Fury
+description: Like lucky blocks...but in the world!
+website: https://github.com/drazisil/lucky-world
 api-version: 1.13
 commands:
    lucky:
       description: Commands to manage LuckyWorld
       usage: |
-        /lucky listEvents <rarity - List all events by rarity
-        /lucky triggerEvent <rarity <event name> - Trigger a LuckyEvent by rarity and name
-        /lucky luckyForce - Trigger the LuckyEvent set as rarity ALWAYS (used for testing, may not do anything
+        /<command> listEvents <rarity - List all events by rarity
+        /<command> triggerEvent <rarity <event name> - Trigger a LuckyEvent by rarity and name
+        /<command> luckyForce - Trigger the LuckyEvent set as rarity ALWAYS (used for testing, may not do anything
