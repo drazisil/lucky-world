@@ -4,5 +4,8 @@ main: ${project.groupId}.${project.artifactId}.${project.name}
 api-version: 1.13
 commands:
    lucky:
-      description: Force a LuckyWorld event
-      usage: /lucky luckyForce
+      description: Commands to manage LuckyWorld
+      usage: |
+        /lucky listEvents <rarity - List all events by rarity
+        /lucky triggerEvent <rarity <event name> - Trigger a LuckyEvent by rarity and name
+        /lucky luckyForce - Trigger the LuckyEvent set as rarity ALWAYS (used for testing, may not do anything
