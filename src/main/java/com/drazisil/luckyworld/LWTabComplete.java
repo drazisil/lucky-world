@@ -48,6 +48,7 @@ public class LWTabComplete implements TabCompleter {
                 switch (cmd) {
                     case "triggerevent":
                         ArrayList<String> eventNameList = getEventsNamesByType(getRarityByStringName(args[1]));
+                        eventNameList.remove(eventNameList.indexOf("multiblock"));
                         return eventNameList;
                 }
             }

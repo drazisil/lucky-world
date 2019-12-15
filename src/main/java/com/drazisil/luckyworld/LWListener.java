@@ -13,13 +13,13 @@ import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
 import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 
 
-public class LWListener implements Listener
+public class LWListener implements Listener {
 
+    private LuckyWorld plugin = LuckyWorld.getInstance();
 
-{
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage("Welcome, " + event.getPlayer().getName() + " to..." + LuckyWorld.name + "!");
+        event.getPlayer().sendMessage("Welcome, " + event.getPlayer().getName() + " to..." + LuckyWorld.name + "!");
 
     }
 
@@ -27,10 +27,9 @@ public class LWListener implements Listener
     public void onBlockBreak(BlockBreakEvent event) {
 
 
+
         // Fast fail if not a lucky event
-        if (!shouldEvent(10, 3)) return;
-
-
+        if (!shouldEvent(plugin.getMaxNumber(), plugin.getMagicNumber())) return;
 
 
         Player player = event.getPlayer();

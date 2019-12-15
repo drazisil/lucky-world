@@ -31,3 +31,11 @@ Start of changelog
 
 * add miniboss
 * add loony
+
+## 0.1
+
+### 0.1.0
+
+* added config files
+* remove multiblock from command lists
+* add a special multiblock drop

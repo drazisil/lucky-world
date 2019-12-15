@@ -6,17 +6,27 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
+import static org.bukkit.Bukkit.getPluginManager;
 
 public final class LuckyWorld extends JavaPlugin {
 
     public static final Logger logger = LogManager.getLogger();
-    public static LuckyWorld instance;
+    private static LuckyWorld instance;
     static final String name = "LuckyWorld";
+    private static int maxNumber;
+    private static int magicNumber;
+
 
     @Override
     public void onEnable() {
 
         instance = this;
+
+        saveDefaultConfig();
+
+        maxNumber = getConfig().getInt("max-number", 10);
+        magicNumber = getConfig().getInt("magic-number", 3);
+
 
         LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
                 new LuckyEventMultiBlock(), "multiblock"));
@@ -51,8 +61,14 @@ public final class LuckyWorld extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new LWListener(), this);
 
         // Register command manager
-        this.getCommand("lucky").setExecutor(new LWCommands());
-        this.getCommand("lucky").setTabCompleter(new LWTabComplete());
+        try {
+            this.getCommand("lucky").setExecutor(new LWCommands());
+            this.getCommand("lucky").setTabCompleter(new LWTabComplete());
+
+        } catch (NullPointerException x) {
+            logger.error("Error registering commands, quitting.");
+            getPluginManager().disablePlugin(instance);
+        }
 
     }
 
@@ -60,6 +76,15 @@ public final class LuckyWorld extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
+
+    public static int getMaxNumber() {
+        return maxNumber;
+    }
+
+    public static int getMagicNumber() {
+        return magicNumber;
+    }
+
 
     public static LuckyWorld getInstance() {
         return instance;

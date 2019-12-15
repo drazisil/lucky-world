@@ -1,11 +1,12 @@
 package com.drazisil.luckyworld.event;
 
-import com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity;
+import com.drazisil.luckyworld.LuckyWorld;
 import com.google.common.collect.Iterables;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.TNT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -13,17 +14,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
-import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.COMMON;
+import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 
 public class LuckyEventMultiBlock extends LuckyEvent {
 
-    public LuckyEventRarity rarity = COMMON;
-
-
-    public LuckyEventMultiBlock() {
-        this.rarity = COMMON;
-
-    }
+    private LuckyWorld plugin = LuckyWorld.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
@@ -44,13 +39,14 @@ public class LuckyEventMultiBlock extends LuckyEvent {
         if (isSilk) {
             // Was this Silk Touch?
             int stackSize = block.getType().getMaxStackSize();
-            dropStacks(world, location, block.getType(), multiCountFactor, stackSize);
+            dropStacks(player, world, location, block.getType(), multiCountFactor, stackSize);
         } else {
             // Drop normally
             ItemStack oldItem = Iterables.get(oldDrops, 0);
             Material oldMat = oldItem.getType();
             int stackSize = block.getType().getMaxStackSize();
-            dropStacks(world, location, oldMat, oldItem.getAmount() * multiCountFactor, stackSize);
+
+            dropStacks(player, world, location, oldMat, oldItem.getAmount() * multiCountFactor, stackSize);
         }
 
     }
@@ -64,21 +60,31 @@ public class LuckyEventMultiBlock extends LuckyEvent {
      * @param itemCount The number of Items to drop in total
      * @param maxStackSize The max stack size for the ItemStack
      */
-    private void dropStacks(World world, Location location, Material material, int itemCount, int maxStackSize) {
+    private void dropStacks(Player player, World world, Location location, Material material, int itemCount, int maxStackSize) {
         int stackCount = itemCount / maxStackSize;
         int itemsLeft = itemCount % maxStackSize;
 
 
-        // Drop the full stacks
-        if (stackCount > 0) {
-            for (int i = stackCount; i > 0; i--) {
-                world.dropItem(location, new ItemStack(material, maxStackSize));
+        if (shouldEvent(plugin.getConfig().getInt("max-number"),
+                plugin.getConfig().getInt("magic-number"))) {
+            Block block = world.getBlockAt(location);
+            block.setType(Material.TNT);
+            TNT newData = ((TNT) block.getBlockData());
+                    newData.setUnstable(true);
+            block.setBlockData(newData);
+            player.sendMessage("That's...interesting.");
+        } else {
+            // Drop the full stacks
+            if (stackCount > 0) {
+                for (int i = stackCount; i > 0; i--) {
+                    world.dropItem(location, new ItemStack(material, maxStackSize));
+                }
             }
-        }
 
-        // Drop the rest
-        if (itemsLeft > 0) {
-            world.dropItem(location, new ItemStack(material, itemsLeft));
+            // Drop the rest
+            if (itemsLeft > 0) {
+                world.dropItem(location, new ItemStack(material, itemsLeft));
+            }
         }
 
     }

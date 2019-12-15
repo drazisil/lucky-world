@@ -1,0 +1,9 @@
+# The highest number for the random number
+max-number: 10
+
+# The number that will trigger a lucky event
+magic-number: 3
+
+# blocks that could drop during a multi-block event
+custom-multiblocks:
+  - unstable_tnt

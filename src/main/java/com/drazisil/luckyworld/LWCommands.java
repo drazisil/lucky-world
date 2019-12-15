@@ -8,6 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 import static com.drazisil.luckyworld.LuckyWorld.logger;
 import static com.drazisil.luckyworld.event.LWEventHandler.*;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
@@ -49,7 +51,9 @@ public class LWCommands implements CommandExecutor {
 
                 switch (rarity.toLowerCase()) {
                     case "common":
-                        sender.sendMessage(getEventsNamesByType(COMMON).toString());
+                        ArrayList<String> commonEvents = getEventsNamesByType(COMMON);
+                        commonEvents.remove(commonEvents.indexOf("multiblock"));
+                        sender.sendMessage(commonEvents.toString());
                         return true;
                     case "uncommon":
                         sender.sendMessage(getEventsNamesByType(UNCOMMON).toString());
