@@ -32,6 +32,8 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventMooshoom(), "mooshoom"));
         LWEventHandler.registerEvent(UNCOMMON, new LuckyEventEntry(
                 new LuckyEventChickens(), "chickens"));
+        LWEventHandler.registerEvent(UNCOMMON, new LuckyEventEntry(
+                new LuckyEventOuch(), "loony"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventSlowFallGhast(), "ghast"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
@@ -42,6 +44,9 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventDisco(), "disco"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventEndTimes(), "end_times"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventZombieLord(), "miniboss"));
+
 
         getServer().getPluginManager().registerEvents(new LWListener(), this);
 

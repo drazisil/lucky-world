@@ -26,3 +26,8 @@ Start of changelog
 
 * add command tab complete
 * fix shy ghast
+
+### 0.0.6
+
+* add miniboss
+* add loony
