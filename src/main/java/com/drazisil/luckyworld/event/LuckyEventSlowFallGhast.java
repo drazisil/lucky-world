@@ -13,11 +13,12 @@ public class LuckyEventSlowFallGhast extends LuckyEvent {
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
-        location.setY(world.getMaxHeight() - 10);
+        int newY = world.getMaxHeight() - 10;
+        location.setY(newY);
 
+        player.teleport(location);
         Ghast ghast = world.spawn(location, Ghast.class);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1200, 1));
-
         ghast.addPassenger(player);
 
 

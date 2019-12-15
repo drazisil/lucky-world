@@ -47,6 +47,7 @@ public final class LuckyWorld extends JavaPlugin {
 
         // Register command manager
         this.getCommand("lucky").setExecutor(new LWCommands());
+        this.getCommand("lucky").setTabCompleter(new LWTabComplete());
 
     }
 

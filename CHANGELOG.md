@@ -21,3 +21,8 @@ Start of changelog
 
 * fleshed out the plugin file
 * improved command usage help
+
+### 0.0.5
+
+* add command tab complete
+* fix shy ghast

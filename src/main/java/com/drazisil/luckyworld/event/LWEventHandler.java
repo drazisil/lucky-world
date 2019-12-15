@@ -86,6 +86,20 @@ public class LWEventHandler {
         return getRandomEventFromSet(eventsCommon);
     }
 
+    public static LuckyEventRarity getRarityByStringName(String rarity) {
+        switch (rarity) {
+            case "common":
+                return LuckyEventRarity.COMMON;
+            case "uncommon":
+                return LuckyEventRarity.UNCOMMON;
+            case "rare":
+                return LuckyEventRarity.RARE;
+            case "always":
+                return LuckyEventRarity.ALWAYS;
+        }
+        return null;
+    }
+
     public static ArrayList<String> getEventsNamesByType(LuckyEventRarity rarity) {
         ArrayList<String> eventNames = new ArrayList<>();
 
