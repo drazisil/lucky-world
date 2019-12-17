@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.getEventsNamesByType;
 import static com.drazisil.luckyworld.event.LWEventHandler.getRarityByStringName;
@@ -47,8 +48,9 @@ public class LWTabComplete implements TabCompleter {
 
                 switch (cmd) {
                     case "triggerevent":
-                        ArrayList<String> eventNameList = getEventsNamesByType(getRarityByStringName(args[1]));
-                        eventNameList.remove(eventNameList.indexOf("multiblock"));
+                        String rarity = args[1].toLowerCase();
+                        ArrayList<String> eventNameList = getEventsNamesByType(getRarityByStringName(rarity));
+                        if (Objects.equals(rarity, "common")) eventNameList.remove(eventNameList.indexOf("multiblock"));
                         return eventNameList;
                 }
             }

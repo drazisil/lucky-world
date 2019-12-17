@@ -39,3 +39,7 @@ Start of changelog
 * added config files
 * remove multiblock from command lists
 * add a special multiblock drop
+
+### 0.1.1
+
+* Correct tab complete issue
