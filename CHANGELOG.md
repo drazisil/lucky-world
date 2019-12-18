@@ -43,3 +43,4 @@ Start of changelog
 ### 0.1.1
 
 * Correct tab complete issue
+* Create 3D block and save and restore

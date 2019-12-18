@@ -1,6 +1,7 @@
 package com.drazisil.luckyworld.event;
 
 import com.drazisil.luckyworld.BlockSave;
+import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,8 +62,24 @@ public class LuckyEventDisco extends LuckyEvent {
         startLocation1.setX(startLocation1.getX() - 3);
         startLocation1.setZ(startLocation1.getZ() - 3);
 
+        BlockSaveRecord savedBlocks = new BlockSaveRecord();
+        savedBlocks.generateBlockSaveCube(world, location.clone(),
+                7, 7, 7);
 
-        ArrayList<ArrayList<BlockSave>> oldStateMatrix1 = generateBlockSaveMatrix(startLocation1);
+        BlockSaveRecord blocksToChange
+                = new BlockSaveRecord();
+        blocksToChange.generateBlockSaveCube(world, location.clone(),
+                7, 7, 7);
+
+        for (BlockSave blockSave: blocksToChange.getBlocks()) {
+            blockSave.getBlock().setType(Material.COBWEB);
+        }
+
+        player.getServer().broadcastMessage("Start XYZ: " + savedBlocks.getLeftSideX()
+                + " " +  savedBlocks.getTopSideY() + " " + savedBlocks.getFrontSideZ());
+
+        player.getServer().broadcastMessage("End XYZ: " + savedBlocks.getRightSideX()
+                + " " +  savedBlocks.getBottomSideY() + " " + savedBlocks.getBackSideZ());
 
 
         ArrayList<ArrayList<Block>> newBlockMatrix1 = generateBlockMatrix(startLocation1);
@@ -73,7 +90,6 @@ public class LuckyEventDisco extends LuckyEvent {
         startLocation2.setX(startLocation2.getX() - 3);
         startLocation2.setZ(startLocation2.getZ() - 3);
 
-        ArrayList<ArrayList<BlockSave>> oldStateMatrix2 = generateBlockSaveMatrix(startLocation2);
         ArrayList<ArrayList<Block>> newBlockMatrix2 = generateBlockMatrix(startLocation2);
 
 
@@ -101,16 +117,12 @@ public class LuckyEventDisco extends LuckyEvent {
 
         }
 
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix1, oldStateMatrix1), 320);
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> restoreBlockState(newBlockMatrix2, oldStateMatrix2), 320);
-
         setGlassColorTask = Bukkit.getScheduler().runTaskTimer(plugin,
                 () -> setGlassColors(newBlockMatrix1, startLocation1), 0, 20);
 
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> savedBlocks.restoreAll(blocksToChange), 320);
 
     }
 
@@ -165,41 +177,6 @@ public class LuckyEventDisco extends LuckyEvent {
 
         }
         return blockMatrix;
-    }
-
-    private ArrayList<ArrayList<BlockSave>> generateBlockSaveMatrix(Location startLocation) {
-        ArrayList<ArrayList<BlockSave>> blockSaveMatrix = new ArrayList<>();
-
-        double startX = startLocation.getX();
-        double startZ = startLocation.getZ();
-        Location cursorLocation = startLocation.clone();
-        for (int z = 0; z <= 6; z++) {
-            cursorLocation.setZ(startZ + z);
-            ArrayList<BlockSave> blockRow = new ArrayList<>();
-            for (int x = 0; x <= 6; x++) {
-                cursorLocation.setX(startX + x);
-
-                Block block = cursorLocation.getBlock();
-                Material type = block.getType();
-                BlockState state = block.getState();
-
-                blockRow.add(new BlockSave(block, type, cursorLocation, state));
-            }
-            blockSaveMatrix.add(blockRow);
-
-        }
-        return  blockSaveMatrix;
-    }
-
-    public void restoreBlockState(ArrayList<ArrayList<Block>> blockMatrix,
-                                  ArrayList<ArrayList<BlockSave>> blockSaveMatrix) {
-        for (int z = 0; z <= 6; z++) {
-            for (int x = 0; x <= 6; x++) {
-                blockMatrix.get(z).get(x).setType(blockSaveMatrix.get(z).get(x).getType());
-                blockSaveMatrix.get(z).get(x).getState().update();
-            }
-
-        }
     }
 
 
