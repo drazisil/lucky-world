@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
 import static com.drazisil.luckyworld.event.LWEventHandler.getRandomMaterial;
 
 
@@ -64,23 +65,17 @@ public class LuckyEventDisco extends LuckyEvent {
 
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
         savedBlocks.generateBlockSaveCube(world, location.clone(),
-                7, 7, 7);
+                7, 7, 7, CENTER_OFFSET_Y, 0, 1, 0);
 
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
         blocksToChange.generateBlockSaveCube(world, location.clone(),
-                7, 7, 7);
+                7, 7, 7, CENTER_OFFSET_Y, 0, 1, 0);
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
-            blockSave.getBlock().setType(Material.COBWEB);
+            clearBlockInventory(blockSave.getBlock());
+            blockSave.getBlock().setType(Material.AIR);
         }
-
-        player.getServer().broadcastMessage("Start XYZ: " + savedBlocks.getLeftSideX()
-                + " " +  savedBlocks.getTopSideY() + " " + savedBlocks.getFrontSideZ());
-
-        player.getServer().broadcastMessage("End XYZ: " + savedBlocks.getRightSideX()
-                + " " +  savedBlocks.getBottomSideY() + " " + savedBlocks.getBackSideZ());
-
 
         ArrayList<ArrayList<Block>> newBlockMatrix1 = generateBlockMatrix(startLocation1);
 

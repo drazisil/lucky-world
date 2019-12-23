@@ -44,3 +44,7 @@ Start of changelog
 
 * Correct tab complete issue
 * Create 3D block and save and restore
+
+### 0.1.2
+
+* create lava pit

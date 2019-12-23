@@ -10,6 +10,14 @@ import java.util.ArrayList;
 
 public class BlockSaveRecord {
 
+    public enum CenterType {
+        NONE,
+        CENTER,
+        CENTER_OFFSET_X,
+        CENTER_OFFSET_Y,
+        CENTER_OFFSET_Z
+    }
+
     private World world;
     private int height;
     private int width;
@@ -78,40 +86,49 @@ public class BlockSaveRecord {
     }
 
     public BlockSaveRecord generateBlockSaveCube(World world, Location startLocation,
-                                                        int height, int width, int depth, boolean isCentered) {
+                                                 int height, int width, int depth,
+                                                 CenterType centerType, int offsetX,
+                                                 int offsetY, int offsetZ) {
 
         setWorld(world);
         setHeight(height);
         setWidth(width);
         setDepth(depth);
 
-        double startX;
-        double startY;
-        double startZ;
+        double startX = 0.0d;
+        double startY = 0.0d;
+        double startZ = 0.0d;
 
-        if (isCentered) {
-            startX = getSquareStartX(startLocation, width);
-            startY = getSquareStartY(startLocation, height);
-            startZ = getSquareStartZ(startLocation, depth);
+        switch (centerType) {
+            case CENTER:
+                startX = getSquareStartX(startLocation, width);
+                startY = getSquareStartY(startLocation, height);
+                startZ = getSquareStartZ(startLocation, depth);
+                break;
+            case CENTER_OFFSET_Y:
+                startX = getSquareStartX(startLocation, width);
+                startY = getSquareStartY(startLocation, height) + offsetY;
+                startZ = getSquareStartZ(startLocation, depth);
+                break;
 
-        } else {
-            startX = startLocation.getX();
-            startY = startLocation.getY();
-            startZ = startLocation.getZ();
-
+            case NONE:
+                startX = startLocation.getX();
+                startY = startLocation.getY();
+                startZ = startLocation.getZ();
+                break;
         }
 
         computeSides(startX, startY, startZ);
 
         Location cursorLocation = startLocation.clone();
 
-        for (double y = startY; y > (startY - depth); y -= 1.0f) {
+        for (double y = startY; y > (startY - depth); y -= 1.0d) {
             cursorLocation.setY(y);
 
-            for (double x = startX; x < (startX + width); x += 1.0f) {
+            for (double x = startX; x < (startX + width); x += 1.0d) {
                 cursorLocation.setX(x);
 
-                for (double z = startZ; z < (startZ + depth); z += 1.0f) {
+                for (double z = startZ; z < (startZ + depth); z += 1.0d) {
                     cursorLocation.setZ(z);
 
                     // Capture the block
@@ -136,13 +153,6 @@ public class BlockSaveRecord {
         this.backSideZ = this.frontSideZ + this.depth;
         this.bottomSideY = this.topSideY - this.height;
     }
-
-    public BlockSaveRecord generateBlockSaveCube(World world, Location startLocation,
-                                                 int height, int width, int depth) {
-        return generateBlockSaveCube(world, startLocation, height, width, depth, true);
-
-    }
-
 
     private double getSquareStartX(Location location, int width) {
         assert (width % 2) == 0;

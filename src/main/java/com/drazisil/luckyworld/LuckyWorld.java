@@ -56,6 +56,9 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventEndTimes(), "end_times"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventZombieLord(), "miniboss"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventLavaFloor(), "lava_pit"));
+
 
 
         getServer().getPluginManager().registerEvents(new LWListener(), this);
