@@ -24,28 +24,24 @@ public class BlockSaveRecord {
     private int depth;
 
     public double getLeftSideX() {
-        return leftSideX;
+        return Math.floor(leftSideX);
     }
 
     public double getRightSideX() {
-        return rightSideX;
+        return Math.floor(rightSideX);
     }
 
     public double getFrontSideZ() {
-        return frontSideZ;
+        return Math.floor(frontSideZ);
     }
 
     public double getBackSideZ() {
-        return backSideZ;
+        return Math.floor(backSideZ);
     }
 
-    public double getTopSideY() {
-        return topSideY;
-    }
+    public double getTopSideY() {  return Math.floor(topSideY);  }
 
-    public double getBottomSideY() {
-        return bottomSideY;
-    }
+    public double getBottomSideY() { return Math.floor(bottomSideY); }
 
     private double leftSideX;
     private double rightSideX;
@@ -85,10 +81,12 @@ public class BlockSaveRecord {
         this.blocks.add(block);
     }
 
-    public BlockSaveRecord generateBlockSaveCube(World world, Location startLocation,
+    public BlockSaveRecord generateBlockSaveCube(World world, Location rawStartLocation,
                                                  int height, int width, int depth,
                                                  CenterType centerType, int offsetX,
                                                  int offsetY, int offsetZ) {
+
+        Location startLocation = cleanLocation(rawStartLocation.clone());
 
         setWorld(world);
         setHeight(height);
@@ -145,22 +143,21 @@ public class BlockSaveRecord {
     }
 
     private void computeSides(double startX, double startY, double startZ) {
-        this.leftSideX = startX;
-        this.frontSideZ = startZ;
-        this.topSideY = startY;
+        this.leftSideX = Math.floor(startX);
+        this.frontSideZ = Math.floor(startZ);
+        this.topSideY = Math.floor(startY);
 
-        this.rightSideX = this.leftSideX + this.width;
-        this.backSideZ = this.frontSideZ + this.depth;
-        this.bottomSideY = this.topSideY - this.height;
+        this.rightSideX = this.leftSideX + this.width - 1;
+        this.backSideZ = this.frontSideZ + this.depth - 1;
+        this.bottomSideY = this.topSideY - this.height + 1;
     }
 
     private double getSquareStartX(Location location, int width) {
-        assert (width % 2) == 0;
 
         int startOffset = (width - 1) / 2;
 
         Location startLocation = location.clone();
-        startLocation.setX(startLocation.getX() - startOffset);
+        startLocation.setX(Math.floor(startLocation.getX()) - startOffset);
         return  startLocation.getX();
     }
 
@@ -170,22 +167,20 @@ public class BlockSaveRecord {
         int startOffset = (height - 1) / 2;
 
         Location startLocation = location.clone();
-        startLocation.setY(startLocation.getY() + startOffset);
+        startLocation.setY(Math.floor(startLocation.getY()) + startOffset);
         return startLocation.getY();
     }
 
     private double getSquareStartZ(Location location, int depth) {
-        assert (depth % 2) == 0;
 
         int startOffset = (depth - 1) / 2;
 
         Location startLocation = location.clone();
-        startLocation.setZ(startLocation.getZ() - startOffset);
+        startLocation.setZ(Math.floor(startLocation.getZ()) - startOffset);
         return startLocation.getZ();
     }
 
     public void restoreAll(BlockSaveRecord blocksToChange) {
-        assert getBlocks().size() == blocksToChange.getBlocks().size();
 
         ArrayList<BlockSave> currentBlocks = blocksToChange.getBlocks();
         ArrayList<BlockSave> restoreBlocks = getBlocks();
@@ -199,6 +194,33 @@ public class BlockSaveRecord {
             restoreBlock.getState().update();
         }
 
+    }
+
+    public BlockSave getBlockSaveByLocation(Location loc) {
+        for (BlockSave blockSave: getBlocks()) {
+            if (compareFloorLocation(blockSave.getLocation(), loc)) {
+                return blockSave;
+            }
+        }
+        return null;
+    }
+
+    private boolean compareFloorDouble(double d1, double d2) {
+        return Math.floor(d1) == Math.floor(d2);
+    }
+
+    private boolean compareFloorLocation(Location l1, Location l2) {
+        return (compareFloorDouble(l1.getX(), l2.getX())
+                && compareFloorDouble(l1.getY(), l2.getY())
+                && compareFloorDouble(l1.getZ(), l2.getZ()));
+    }
+
+    private Location cleanLocation(Location inLocation) {
+        Location outLocation = inLocation.clone();
+        outLocation.setX(Math.floor(inLocation.getX()));
+        outLocation.setY(Math.floor(inLocation.getY()));
+        outLocation.setZ(Math.floor(inLocation.getZ()));
+        return outLocation;
     }
 
     public void setWorld(World world) {

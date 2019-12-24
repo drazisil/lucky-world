@@ -10,14 +10,19 @@ import org.bukkit.World;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.scheduler.BukkitTask;
 
-import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
 
 
 public class LuckyEventLavaFloor extends LuckyEvent {
 
 
     private LuckyWorld plugin = LuckyWorld.getInstance();
+
+    private double lavaFloorY;
+
+    private BukkitTask raiseLavaLevelTask;
 
 
     @Override
@@ -28,19 +33,21 @@ public class LuckyEventLavaFloor extends LuckyEvent {
         Location startLocation = location.clone();
         startLocation.setY(location.getY() - 1);
 
-        int height = 7;
+        int height = 9;
+        int width = 9;
+        int depth = 9;
 
         // Saved blocks
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
         savedBlocks.generateBlockSaveCube(world, location.clone(),
-                height, 7, 7, CENTER, 0, 0, 0);
+                height, width, depth, CENTER_OFFSET_Y, 0, -3, 0);
 
 
         // Blocks to change
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
         blocksToChange.generateBlockSaveCube(world, location.clone(),
-                height, 7, 7, CENTER, 0, 0, 0);
+                height, width, depth, CENTER_OFFSET_Y, 0, -3, 0);
 
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
@@ -52,25 +59,67 @@ public class LuckyEventLavaFloor extends LuckyEvent {
             Location savedLocation = blockSave.getBlock().getLocation();
             Location playerLocation = startLocation.clone();
 
-            if (savedLocation.getY() <= startLocation.getY()) {
 
-                if (Math.floor(savedLocation.getX()) == Math.floor(playerLocation.getX())
-                        && Math.floor(savedLocation.getZ()) == Math.floor(playerLocation.getZ())) {
-                    System.out.println("cobble " + savedLocation);
-                    System.out.println("cobble!" + location.clone());
-                    blockSave.getBlock().setType(Material.COBBLESTONE);
-                } else {
-                    blockSave.getBlock().setType(Material.LAVA);
-                }
+            if (compareFloorLocation(savedLocation, playerLocation)) {
 
+                blockSave.getBlock().setType(Material.BARRIER);
             }
 
+
         }
+
+        lavaFloorY = blocksToChange.getBottomSideY();
+
+
+        raiseLavaLevelTask = Bukkit.getScheduler().runTaskTimer(plugin,
+                () -> raiseLavaLevel(blocksToChange, startLocation.clone()), 0, 20);
 
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> savedBlocks.restoreAll(blocksToChange), 320);
 
+    }
+
+    public void raiseLavaLevel(BlockSaveRecord blocksToChange, Location playerLocation) {
+        for (BlockSave blockSave: blocksToChange.getBlocks()) {
+
+            System.out.println(blockSave.getLocation().getY() + " " + getLavaFloorY());
+
+            if (checkLocationY(blockSave.getLocation(), getLavaFloorY())) {
+                blockSave.getBlock().setType(Material.LAVA);
+            }
+
+            if (compareFloorLocation(blockSave.getLocation(), playerLocation)) {
+
+                blockSave.getBlock().setType(Material.BARRIER);
+            }
+
+
+
+
+        }
+        if (lavaFloorY == Math.floor(playerLocation.getY())) {
+            raiseLavaLevelTask.cancel();
+            resetLavaFloorY();
+
+        }
+      incLavaFloorY();
+    }
+
+
+
+    private boolean compareFloorDouble(double d1, double d2) {
+        return Math.floor(d1) == Math.floor(d2);
+    }
+
+    private boolean compareFloorLocation(Location l1, Location l2) {
+        return (compareFloorDouble(l1.getX(), l2.getX())
+                && compareFloorDouble(l1.getY(), l2.getY())
+                && compareFloorDouble(l1.getZ(), l2.getZ()));
+    }
+
+    private boolean checkLocationY(Location l1, double y) {
+        return (compareFloorDouble(l1.getY(), y));
     }
 
     private void clearBlockInventory(Block block) {
@@ -134,4 +183,21 @@ public class LuckyEventLavaFloor extends LuckyEvent {
                 break;
         }
     }
+
+    public double getLavaFloorY() {
+        return this.lavaFloorY;
+    }
+
+    public void incLavaFloorY() {
+        this.lavaFloorY++;
+    }
+
+    public void decLavaFloorY() {
+        this.lavaFloorY--;
+    }
+
+    public void resetLavaFloorY() {
+        this.lavaFloorY = 0.0;
+    }
+
 }

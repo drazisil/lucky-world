@@ -48,3 +48,7 @@ Start of changelog
 ### 0.1.2
 
 * create lava pit
+
+### 0.1.3
+
+* fix lava pit

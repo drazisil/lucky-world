@@ -15,7 +15,7 @@ public class BlockSave {
     public BlockSave(Block block, Material type, Location location, BlockState state) {
         this.block = block;
         this.type = type;
-        this.location = location;
+        this.location = cleanLocation(location);
         this.state = state;
     }
 
@@ -33,5 +33,13 @@ public class BlockSave {
 
     public Material getType() {
         return type;
+    }
+
+    private Location cleanLocation(Location inLocation) {
+        Location outLocation = inLocation.clone();
+        outLocation.setX(Math.floor(inLocation.getX()));
+        outLocation.setY(Math.floor(inLocation.getY()));
+        outLocation.setZ(Math.floor(inLocation.getZ()));
+        return outLocation;
     }
 }
