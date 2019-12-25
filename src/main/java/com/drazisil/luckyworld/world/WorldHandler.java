@@ -54,7 +54,7 @@ public class WorldHandler {
         Location spawnLoc = getSpawnLocation();
 
         if (plugin.locationToString(location).equals(plugin.locationToString(spawnLoc))
-                && event.getBlock().getType() == Material.EMERALD_BLOCK) {
+                && event.getBlock().getType() == Material.GREEN_STAINED_GLASS) {
             dispatchCommand(player, "execute in overworld run tp 0 64 0");
             player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
             player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
@@ -64,6 +64,9 @@ public class WorldHandler {
     }
 
     public void generateSpawnPlatform() {
+        
+        // TODO: Make platform unbreakable
+
         Block spawnBlock = newWorld.getBlockAt(getSpawnLocation());
 
         BlockSaveRecord blocksToChange
@@ -72,10 +75,22 @@ public class WorldHandler {
                 1, 5, 5, CENTER, 0, 0, 0);
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
-            blockSave.getBlock().setType(Material.BEDROCK);
+            blockSave.getBlock().setType(Material.QUARTZ_BLOCK);
         }
 
-        spawnBlock.setType(Material.EMERALD_BLOCK);
+        spawnBlock.setType(Material.GREEN_STAINED_GLASS);
+
+        // Create beacon
+        Location beaconBlockLocation = getSpawnLocation().clone();
+        beaconBlockLocation.setY(beaconBlockLocation.getY() - 1);
+
+        Block beaconBlock = newWorld.getBlockAt(beaconBlockLocation);
+        beaconBlock.setType(Material.BEACON);
+
+        // Open the sky
+        for (int i = (int) (getSpawnLocation().getY() + 1); i < newWorld.getMaxHeight(); i++) {
+            newWorld.getBlockAt(getSpawnLocation().getBlockX(), i, getSpawnLocation().getBlockZ()).setType(Material.AIR);
+        }
 
     }
 
