@@ -110,4 +110,10 @@ public final class LuckyWorld extends JavaPlugin {
         return outLocation;
     }
 
+    public String locationToString(Location loc) {
+        return Math.floor(loc.getX()) +
+                " " + Math.floor(loc.getY()) +
+                " " + Math.floor(loc.getZ());
+    }
+
 }

@@ -16,7 +16,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
 
     private LuckyWorld plugin = LuckyWorld.getInstance();
 
-    int numSeconds = 60 * 1;
+    int numSeconds = 60 * 3;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
@@ -31,7 +31,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         Location newSpawn;
         newSpawn = plugin.cleanLocation(newWorld.getSpawnLocation());
 
-        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + locationToString(newSpawn));
+        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + plugin.locationToString(newSpawn));
 
         if (worldHandler.getSpawnLocation() == null) {
             newSpawn = player.getLocation();
@@ -57,20 +57,14 @@ public class LuckyEventNewWorld extends LuckyEvent {
         // Revert
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> {
-                    System.out.println("execute in overworld run tp " + playerName +  " " + locationToString(location));
-                    dispatchCommand(player, "execute in overworld run tp " + locationToString(location));
+                    System.out.println("execute in overworld run tp " + playerName +  " " + plugin.locationToString(location));
+                    dispatchCommand(player, "execute in overworld run tp " + plugin.locationToString(location));
                     player.setGameMode(oldGameMode);
                     player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
                     player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
                     player.setInvulnerable(false);
                 }, getDurationBySeconds(numSeconds));
 
-    }
-
-    private String locationToString(Location loc) {
-        return Math.floor(loc.getX()) +
-                " " + Math.floor(loc.getY()) +
-                " " + Math.floor(loc.getZ());
     }
 
     private int getDurationBySeconds(int seconds) {
