@@ -39,8 +39,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + plugin.locationToString(playerSafeSpawn));
 
         if (worldHandler.getSpawnLocation() == null) {
-            newSpawn = player.getLocation();
-            worldHandler.setNewSpawnLocation(newSpawn);
+            worldHandler.setNewSpawnLocation(playerSafeSpawn);
 
             worldHandler.generateSpawnPlatform();
         }

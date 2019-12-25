@@ -56,3 +56,5 @@ Start of changelog
 ### 0.1.4
 
 * a whole new world?
+* spawn platform works and is safe
+
