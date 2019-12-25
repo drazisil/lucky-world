@@ -1,8 +1,10 @@
 package com.drazisil.luckyworld.event;
 
 import com.drazisil.luckyworld.LuckyWorld;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -31,17 +33,16 @@ public class LuckyEventNewWorld extends LuckyEvent {
         Location newSpawn;
         newSpawn = plugin.cleanLocation(newWorld.getSpawnLocation());
 
-        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + plugin.locationToString(newSpawn));
+        Location playerSafeSpawn = newSpawn.clone();
+        playerSafeSpawn.setY(playerSafeSpawn.getY() + 1);
+
+        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + plugin.locationToString(playerSafeSpawn));
 
         if (worldHandler.getSpawnLocation() == null) {
             newSpawn = player.getLocation();
             worldHandler.setNewSpawnLocation(newSpawn);
 
-            Block spawnBlock = newWorld.getBlockAt(worldHandler.getSpawnLocation());
-
-            //TODO: generate spawn platform
-
-            spawnBlock.setType(Material.EMERALD_BLOCK);
+            worldHandler.generateSpawnPlatform();
         }
 
         // Set and move player to spawn
@@ -51,7 +52,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         player.setInvulnerable(true);
         player.addPotionEffect(superJump);
 
-        player.teleport(newSpawn);
+        player.teleport(playerSafeSpawn);
 
 
         // Revert
