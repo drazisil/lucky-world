@@ -7,6 +7,8 @@ import org.bukkit.block.BlockState;
 
 public class BlockSave {
 
+    private LuckyWorld plugin = LuckyWorld.getInstance();
+
     private Block block;
     private Material type;
     private Location location;
@@ -15,7 +17,7 @@ public class BlockSave {
     public BlockSave(Block block, Material type, Location location, BlockState state) {
         this.block = block;
         this.type = type;
-        this.location = cleanLocation(location);
+        this.location = plugin.cleanLocation(location);
         this.state = state;
     }
 
@@ -35,11 +37,5 @@ public class BlockSave {
         return type;
     }
 
-    private Location cleanLocation(Location inLocation) {
-        Location outLocation = inLocation.clone();
-        outLocation.setX(Math.floor(inLocation.getX()));
-        outLocation.setY(Math.floor(inLocation.getY()));
-        outLocation.setZ(Math.floor(inLocation.getZ()));
-        return outLocation;
-    }
+
 }

@@ -1,8 +1,10 @@
 package com.drazisil.luckyworld;
 
 import com.drazisil.luckyworld.event.*;
+import com.drazisil.luckyworld.world.WorldHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
@@ -12,10 +14,10 @@ public final class LuckyWorld extends JavaPlugin {
 
     public static final Logger logger = LogManager.getLogger();
     private static LuckyWorld instance;
+    public static WorldHandler worldHandler;
     static final String name = "LuckyWorld";
     private static int maxNumber;
     private static int magicNumber;
-
 
     @Override
     public void onEnable() {
@@ -28,6 +30,11 @@ public final class LuckyWorld extends JavaPlugin {
         magicNumber = getConfig().getInt("magic-number", 3);
 
 
+        // Create world
+        worldHandler = new WorldHandler();
+
+
+        // Register events
         LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
                 new LuckyEventMultiBlock(), "multiblock"));
         LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
@@ -58,6 +65,8 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventZombieLord(), "miniboss"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventLavaFloor(), "lava_pit"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventNewWorld(), "new_world"));
 
 
 
@@ -92,4 +101,13 @@ public final class LuckyWorld extends JavaPlugin {
     public static LuckyWorld getInstance() {
         return instance;
     }
+
+    public Location cleanLocation(Location inLocation) {
+        Location outLocation = inLocation.clone();
+        outLocation.setX(Math.floor(inLocation.getX()));
+        outLocation.setY(Math.floor(inLocation.getY()));
+        outLocation.setZ(Math.floor(inLocation.getZ()));
+        return outLocation;
+    }
+
 }

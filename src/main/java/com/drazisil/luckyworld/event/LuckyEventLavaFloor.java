@@ -83,8 +83,6 @@ public class LuckyEventLavaFloor extends LuckyEvent {
     public void raiseLavaLevel(BlockSaveRecord blocksToChange, Location playerLocation) {
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
 
-            System.out.println(blockSave.getLocation().getY() + " " + getLavaFloorY());
-
             if (checkLocationY(blockSave.getLocation(), getLavaFloorY())) {
                 blockSave.getBlock().setType(Material.LAVA);
             }

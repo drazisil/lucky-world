@@ -23,6 +23,8 @@ public class LWListener implements Listener {
 
     }
 
+    //TODO: Watch for spawn block
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 

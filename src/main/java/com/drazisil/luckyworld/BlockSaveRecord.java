@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class BlockSaveRecord {
 
+    private LuckyWorld plugin = LuckyWorld.getInstance();
+
     public enum CenterType {
         NONE,
         CENTER,
@@ -86,7 +88,7 @@ public class BlockSaveRecord {
                                                  CenterType centerType, int offsetX,
                                                  int offsetY, int offsetZ) {
 
-        Location startLocation = cleanLocation(rawStartLocation.clone());
+        Location startLocation = plugin.cleanLocation(rawStartLocation.clone());
 
         setWorld(world);
         setHeight(height);
@@ -215,13 +217,6 @@ public class BlockSaveRecord {
                 && compareFloorDouble(l1.getZ(), l2.getZ()));
     }
 
-    private Location cleanLocation(Location inLocation) {
-        Location outLocation = inLocation.clone();
-        outLocation.setX(Math.floor(inLocation.getX()));
-        outLocation.setY(Math.floor(inLocation.getY()));
-        outLocation.setZ(Math.floor(inLocation.getZ()));
-        return outLocation;
-    }
 
     public void setWorld(World world) {
         this.world = world;

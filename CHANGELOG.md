@@ -52,3 +52,7 @@ Start of changelog
 ### 0.1.3
 
 * fix lava pit
+
+### 0.1.4
+
+* a whole new world?
