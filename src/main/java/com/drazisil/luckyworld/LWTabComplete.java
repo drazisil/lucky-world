@@ -12,7 +12,7 @@ import java.util.Objects;
 import static com.drazisil.luckyworld.event.LWEventHandler.getEventsNamesByType;
 import static com.drazisil.luckyworld.event.LWEventHandler.getRarityByStringName;
 
-public class LWTabComplete implements TabCompleter {
+class LWTabComplete implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 

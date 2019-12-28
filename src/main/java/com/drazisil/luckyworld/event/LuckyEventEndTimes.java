@@ -13,13 +13,11 @@ import static org.bukkit.Bukkit.getConsoleSender;
 
 public class LuckyEventEndTimes extends LuckyEvent {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
-
-        World oldWorld = world;
 
         ConsoleCommandSender consoleSender = getConsoleSender();
 

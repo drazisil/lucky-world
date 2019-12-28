@@ -58,3 +58,8 @@ Start of changelog
 * a whole new world?
 * spawn platform works and is safe
 
+## 0.2
+
+### 0.2.0
+
+* A whole new world

@@ -1,11 +1,12 @@
 package com.drazisil.luckyworld.world;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
 import java.util.Random;
 
-public class LWChunkGenerator extends ChunkGenerator {
+class LWChunkGenerator extends ChunkGenerator {
 
     /**
      * Shapes the chunk for the given coordinates.
@@ -31,10 +32,14 @@ public class LWChunkGenerator extends ChunkGenerator {
      * @return ChunkData containing the types for each block created by this
      *     generator
      */
-    @Override
-    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+    public ChunkData generateChunkData(World world, Random random, int x, int z, LWChunkGenerator.BiomeGrid biome) {
         ChunkData chunkData = createChunkData(world);
+
+        chunkData.setRegion(0, 0, 0, 16, 1, 16, Material.BEDROCK);
+        chunkData.setRegion(0, 1, 0, 16, 2, 16, Material.GRASS_BLOCK);
+
         return  chunkData;
     }
 
 }
+

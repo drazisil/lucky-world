@@ -18,7 +18,7 @@ import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y
 public class LuckyEventLavaFloor extends LuckyEvent {
 
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     private double lavaFloorY;
 
@@ -39,15 +39,15 @@ public class LuckyEventLavaFloor extends LuckyEvent {
 
         // Saved blocks
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
-        savedBlocks.generateBlockSaveCube(world, location.clone(),
-                height, width, depth, CENTER_OFFSET_Y, 0, -3, 0);
+        savedBlocks.generateBlockSaveCube(location.clone(),
+                height, width, depth, CENTER_OFFSET_Y,  -3);
 
 
         // Blocks to change
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
-        blocksToChange.generateBlockSaveCube(world, location.clone(),
-                height, width, depth, CENTER_OFFSET_Y, 0, -3, 0);
+        blocksToChange.generateBlockSaveCube(location.clone(),
+                height, width, depth, CENTER_OFFSET_Y, -3);
 
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
@@ -80,7 +80,7 @@ public class LuckyEventLavaFloor extends LuckyEvent {
 
     }
 
-    public void raiseLavaLevel(BlockSaveRecord blocksToChange, Location playerLocation) {
+    private void raiseLavaLevel(BlockSaveRecord blocksToChange, Location playerLocation) {
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
 
             if (checkLocationY(blockSave.getLocation(), getLavaFloorY())) {
@@ -182,19 +182,15 @@ public class LuckyEventLavaFloor extends LuckyEvent {
         }
     }
 
-    public double getLavaFloorY() {
+    private double getLavaFloorY() {
         return this.lavaFloorY;
     }
 
-    public void incLavaFloorY() {
+    private void incLavaFloorY() {
         this.lavaFloorY++;
     }
 
-    public void decLavaFloorY() {
-        this.lavaFloorY--;
-    }
-
-    public void resetLavaFloorY() {
+    private void resetLavaFloorY() {
         this.lavaFloorY = 0.0;
     }
 

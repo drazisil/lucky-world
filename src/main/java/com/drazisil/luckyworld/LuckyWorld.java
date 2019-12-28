@@ -4,7 +4,6 @@ import com.drazisil.luckyworld.event.*;
 import com.drazisil.luckyworld.world.WorldHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
@@ -67,6 +66,8 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventLavaFloor(), "lava_pit"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventNewWorld(), "new_world"));
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
+                new LuckyEventOneSteve(), "one_steve_enters"));
 
 
 
@@ -102,18 +103,6 @@ public final class LuckyWorld extends JavaPlugin {
         return instance;
     }
 
-    public Location cleanLocation(Location inLocation) {
-        Location outLocation = inLocation.clone();
-        outLocation.setX(Math.floor(inLocation.getX()));
-        outLocation.setY(Math.floor(inLocation.getY()));
-        outLocation.setZ(Math.floor(inLocation.getZ()));
-        return outLocation;
-    }
 
-    public String locationToString(Location loc) {
-        return Math.floor(loc.getX()) +
-                " " + Math.floor(loc.getY()) +
-                " " + Math.floor(loc.getZ());
-    }
 
 }

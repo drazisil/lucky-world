@@ -14,7 +14,7 @@ import static com.drazisil.luckyworld.LuckyWorld.logger;
 import static com.drazisil.luckyworld.event.LWEventHandler.*;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
 
-public class LWCommands implements CommandExecutor {
+class LWCommands implements CommandExecutor {
 
 
     // This method is called, when somebody uses our command

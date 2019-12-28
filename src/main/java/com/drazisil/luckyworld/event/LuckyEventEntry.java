@@ -2,8 +2,8 @@ package com.drazisil.luckyworld.event;
 
 public class LuckyEventEntry {
 
-    public LuckyEvent event;
-    public String name;
+    public final LuckyEvent event;
+    public final String name;
 
     public LuckyEventEntry(LuckyEvent event, String name) {
         this.event = event;

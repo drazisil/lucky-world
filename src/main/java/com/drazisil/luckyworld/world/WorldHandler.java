@@ -8,23 +8,23 @@ import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.logging.Logger;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
+import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
 import static org.bukkit.Bukkit.createWorld;
 import static org.bukkit.Bukkit.dispatchCommand;
 
 public class WorldHandler {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
     private Logger logger = plugin.getLogger();
 
     private Location newSpawnLocation;
 
-    private World newWorld;
+    private final World newWorld;
 
 
     public WorldHandler() {
@@ -32,26 +32,14 @@ public class WorldHandler {
 
         WorldCreator newWorldCreator = new WorldCreator("new_world");
 
-//        newWorldCreator.generator(new LWChunkGenerator());
-
-        // Dubug things
-        String generatorSettings = newWorldCreator.generatorSettings();
-        logger.info("generator settings: " + generatorSettings);
-
-        ChunkGenerator chunkGenerator = newWorldCreator.generator();
-        logger.info("chunk generator: " + String.valueOf(chunkGenerator));
-
-        WorldType worldType = newWorldCreator.type();
-        logger.info(String.valueOf("worldtype: " + worldType));
-
-        World.Environment worldEnv = newWorldCreator.environment();
-        logger.info("worldenv: " + String.valueOf(worldEnv));
+        newWorldCreator.generator(new LWChunkGenerator());
+        newWorldCreator.generateStructures(true);
 
         newWorld = createWorld(newWorldCreator);
 
         newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-//        newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, true);
         newWorld.setFullTime(100);
     }
 
@@ -72,7 +60,7 @@ public class WorldHandler {
         Location spawnLoc = getSpawnLocation().clone();
         spawnLoc.setY(spawnLoc.getY() - 1);
 
-        if (plugin.locationToString(location).equals(plugin.locationToString(spawnLoc))
+        if (locationToString(location).equals(locationToString(spawnLoc))
                 && event.getBlock().getType() == Material.GREEN_STAINED_GLASS) {
             dispatchCommand(player, "execute in overworld run tp 0 64 0");
             player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
@@ -88,8 +76,8 @@ public class WorldHandler {
 
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
-        blocksToChange.generateBlockSaveCube(newWorld, getSpawnLocation().clone(),
-                1, 5, 5, CENTER_OFFSET_Y, 0, -1, 0);
+        blocksToChange.generateBlockSaveCube(getSpawnLocation().clone(),
+                1, 5, 5, CENTER_OFFSET_Y,  -1);
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
             blockSave.getBlock().setType(Material.QUARTZ_BLOCK);

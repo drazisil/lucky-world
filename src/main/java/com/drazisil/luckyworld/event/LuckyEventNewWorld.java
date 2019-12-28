@@ -12,13 +12,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import static com.drazisil.luckyworld.LuckyWorld.worldHandler;
+import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
+import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
 import static org.bukkit.Bukkit.*;
 
 public class LuckyEventNewWorld extends LuckyEvent {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
-
-    int numSeconds = 60 * 3;
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
@@ -28,15 +28,17 @@ public class LuckyEventNewWorld extends LuckyEvent {
         String playerName = player.getDisplayName();
         GameMode oldGameMode = player.getGameMode();
 
+        int numSeconds = 60 * 5;
+
         // Get new world spawn
         World newWorld = getWorld("new_world");
         Location newSpawn;
-        newSpawn = plugin.cleanLocation(newWorld.getSpawnLocation());
+        newSpawn = cleanLocation(newWorld.getSpawnLocation());
 
         Location playerSafeSpawn = newSpawn.clone();
         playerSafeSpawn.setY(playerSafeSpawn.getY() + 1);
 
-        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + plugin.locationToString(playerSafeSpawn));
+        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + locationToString(playerSafeSpawn));
 
         if (worldHandler.getSpawnLocation() == null) {
             worldHandler.setNewSpawnLocation(playerSafeSpawn);
@@ -57,8 +59,8 @@ public class LuckyEventNewWorld extends LuckyEvent {
         // Revert
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> {
-                    System.out.println("execute in overworld run tp " + playerName +  " " + plugin.locationToString(location));
-                    dispatchCommand(player, "execute in overworld run tp " + plugin.locationToString(location));
+                    System.out.println("execute in overworld run tp " + playerName +  " " + locationToString(location));
+                    dispatchCommand(player, "execute in overworld run tp " + locationToString(location));
                     player.setGameMode(oldGameMode);
                     player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
                     player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);

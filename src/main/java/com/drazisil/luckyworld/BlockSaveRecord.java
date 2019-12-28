@@ -1,26 +1,25 @@
 package com.drazisil.luckyworld;
 
+import com.drazisil.luckyworld.shared.RoundLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
 import java.util.ArrayList;
 
+import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
+
 public class BlockSaveRecord {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     public enum CenterType {
         NONE,
         CENTER,
-        CENTER_OFFSET_X,
         CENTER_OFFSET_Y,
-        CENTER_OFFSET_Z
     }
 
-    private World world;
     private int height;
     private int width;
     private int depth;
@@ -52,26 +51,18 @@ public class BlockSaveRecord {
     private double topSideY;
     private double bottomSideY;
 
-    private ArrayList<BlockSave> blocks = new ArrayList<>();
+    private final ArrayList<BlockSave> blocks = new ArrayList<>();
 
 
-    public void setHeight(int height) {
+    private void setHeight(int height) {
         this.height = height;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
+    private void setWidth(int width) {
         this.width = width;
     }
 
-    public int getDepth() {
-        return depth;
-    }
-
-    public void setDepth(int depth) {
+    private void setDepth(int depth) {
         this.depth = depth;
     }
 
@@ -79,18 +70,17 @@ public class BlockSaveRecord {
         return blocks;
     }
 
-    public void addBlock(BlockSave block) {
+    private void addBlock(BlockSave block) {
         this.blocks.add(block);
     }
 
-    public BlockSaveRecord generateBlockSaveCube(World world, Location rawStartLocation,
-                                                 int height, int width, int depth,
-                                                 CenterType centerType, int offsetX,
-                                                 int offsetY, int offsetZ) {
+    public void generateBlockSaveCube(Location rawStartLocation,
+                                      int height, int width, int depth,
+                                      CenterType centerType,
+                                      int offsetY) {
 
-        Location startLocation = plugin.cleanLocation(rawStartLocation.clone());
+        RoundLocation startLocation = cleanLocation(rawStartLocation.clone());
 
-        setWorld(world);
         setHeight(height);
         setWidth(width);
         setDepth(depth);
@@ -141,7 +131,6 @@ public class BlockSaveRecord {
             }
 
         }
-        return this;
     }
 
     private void computeSides(double startX, double startY, double startZ) {
@@ -198,27 +187,26 @@ public class BlockSaveRecord {
 
     }
 
-    public BlockSave getBlockSaveByLocation(Location loc) {
-        for (BlockSave blockSave: getBlocks()) {
-            if (compareFloorLocation(blockSave.getLocation(), loc)) {
-                return blockSave;
-            }
-        }
-        return null;
-    }
-
     private boolean compareFloorDouble(double d1, double d2) {
         return Math.floor(d1) == Math.floor(d2);
     }
 
-    private boolean compareFloorLocation(Location l1, Location l2) {
+    private boolean compareFloorLocation(RoundLocation l1, RoundLocation l2) {
         return (compareFloorDouble(l1.getX(), l2.getX())
                 && compareFloorDouble(l1.getY(), l2.getY())
                 && compareFloorDouble(l1.getZ(), l2.getZ()));
     }
 
+    public boolean isBorder(RoundLocation loc) {
+        double x = loc.getX();
+        double y = loc.getY();
+        double z = loc.getZ();
 
-    public void setWorld(World world) {
-        this.world = world;
+        return x == this.getLeftSideX()
+                || x == this.getRightSideX()
+                || y == this.getTopSideY()
+                || y == this.getBottomSideY()
+                || z == this.getFrontSideZ()
+                || z == this.getBackSideZ();
     }
 }

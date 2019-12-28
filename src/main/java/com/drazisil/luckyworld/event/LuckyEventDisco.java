@@ -21,7 +21,7 @@ import static com.drazisil.luckyworld.event.LWEventHandler.getRandomMaterial;
 public class LuckyEventDisco extends LuckyEvent {
 
 
-    public static ArrayList<Material> coloredGlassBlocks = new ArrayList<Material>();
+    private static final ArrayList<Material> coloredGlassBlocks = new ArrayList<Material>();
 
 
     public LuckyEventDisco() {
@@ -35,19 +35,19 @@ public class LuckyEventDisco extends LuckyEvent {
     }
 
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     private int colorChangeCount = 0;
 
-    public int getColorChangeCount() {
+    private int getColorChangeCount() {
         return  this.colorChangeCount;
     }
 
-    public void incColorChangeCount() {
+    private void incColorChangeCount() {
         this.colorChangeCount++;
     }
 
-    public void resetColorChangeCount() {
+    private void resetColorChangeCount() {
         this.colorChangeCount = 0;
     }
 
@@ -64,13 +64,13 @@ public class LuckyEventDisco extends LuckyEvent {
         startLocation1.setZ(startLocation1.getZ() - 3);
 
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
-        savedBlocks.generateBlockSaveCube(world, location.clone(),
-                7, 7, 7, CENTER_OFFSET_Y, 0, 1, 0);
+        savedBlocks.generateBlockSaveCube(location.clone(),
+                7, 7, 7, CENTER_OFFSET_Y, 1);
 
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
-        blocksToChange.generateBlockSaveCube(world, location.clone(),
-                7, 7, 7, CENTER_OFFSET_Y, 0, 1, 0);
+        blocksToChange.generateBlockSaveCube(location.clone(),
+                7, 7, 7, CENTER_OFFSET_Y,  1);
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
             clearBlockInventory(blockSave.getBlock());
@@ -122,7 +122,7 @@ public class LuckyEventDisco extends LuckyEvent {
     }
 
 
-    public void setGlassColors(ArrayList<ArrayList<Block>> blockMatrix, Location startLocation){
+    private void setGlassColors(ArrayList<ArrayList<Block>> blockMatrix, Location startLocation){
 
         double startX1 = startLocation.getX();
         double startZ1 = startLocation.getZ();

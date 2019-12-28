@@ -14,11 +14,12 @@ import static com.drazisil.luckyworld.LuckyWorld.getMaxNumber;
 import static com.drazisil.luckyworld.LuckyWorld.worldHandler;
 import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
 import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
+import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
 
-public class LWListener implements Listener {
+class LWListener implements Listener {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -38,7 +39,7 @@ public class LWListener implements Listener {
             return;
         }
 
-        Location location = plugin.cleanLocation(event.getBlock().getLocation());
+        Location location = cleanLocation(event.getBlock().getLocation());
 
         // Handle new_world events
         if (worldName.equals("new_world")) {

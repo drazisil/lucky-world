@@ -1,23 +1,24 @@
 package com.drazisil.luckyworld;
 
+import com.drazisil.luckyworld.shared.RoundLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
+import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
+
 public class BlockSave {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final Block block;
+    private final Material type;
+    private final RoundLocation location;
+    private final BlockState state;
 
-    private Block block;
-    private Material type;
-    private Location location;
-    private BlockState state;
-
-    public BlockSave(Block block, Material type, Location location, BlockState state) {
+    BlockSave(Block block, Material type, Location location, BlockState state) {
         this.block = block;
         this.type = type;
-        this.location = plugin.cleanLocation(location);
+        this.location = cleanLocation(location);
         this.state = state;
     }
 
@@ -25,7 +26,7 @@ public class BlockSave {
         return block;
     }
 
-    public Location getLocation() {
+    public RoundLocation getLocation() {
         return location;
     }
 

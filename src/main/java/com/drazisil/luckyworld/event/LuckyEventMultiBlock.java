@@ -18,7 +18,7 @@ import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 
 public class LuckyEventMultiBlock extends LuckyEvent {
 
-    private LuckyWorld plugin = LuckyWorld.getInstance();
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {

@@ -8,9 +8,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 import static com.drazisil.luckyworld.LuckyWorld.logger;
+import static com.drazisil.luckyworld.shared.LWUtilities.randInt;
 
 public class LWEventHandler {
 
@@ -21,13 +21,13 @@ public class LWEventHandler {
         ALWAYS
     }
 
-    public static ArrayList<LuckyEventEntry> eventsCommon = new ArrayList<>();
+    private static final ArrayList<LuckyEventEntry> eventsCommon = new ArrayList<>();
 
-    public static ArrayList<LuckyEventEntry> eventsUncommon = new ArrayList<>();
+    private static final ArrayList<LuckyEventEntry> eventsUncommon = new ArrayList<>();
 
-    public static ArrayList<LuckyEventEntry> eventsRare = new ArrayList<>();
+    private static final ArrayList<LuckyEventEntry> eventsRare = new ArrayList<>();
 
-    public static ArrayList<LuckyEventEntry> eventsAlways = new ArrayList<>();
+    private static final ArrayList<LuckyEventEntry> eventsAlways = new ArrayList<>();
 
     public static void registerEvent(LuckyEventRarity rarity, LuckyEventEntry entry) {
         switch (rarity) {
@@ -45,7 +45,7 @@ public class LWEventHandler {
         }
     }
 
-    public static Material getRandomMaterial(ArrayList<Material> set) {
+    static Material getRandomMaterial(ArrayList<Material> set) {
         int max = set.size();
         int randIndex = randInt(max);
         return set.get(randIndex);
@@ -105,8 +105,9 @@ public class LWEventHandler {
 
         ArrayList<LuckyEventEntry> eventEntries = getEventsByRarity(rarity);
 
-        for (int counter = 0; counter < eventEntries.size(); counter++) {
-            eventNames.add(eventEntries.get(counter).name);
+        assert eventEntries != null;
+        for (LuckyEventEntry eventEntry : eventEntries) {
+            eventNames.add(eventEntry.name);
         }
 
         return eventNames;
@@ -116,6 +117,7 @@ public class LWEventHandler {
 
         ArrayList<LuckyEventEntry> eventEntries = getEventsByRarity(rarity);
 
+        assert eventEntries != null;
         for (LuckyEventEntry eventEntry : eventEntries) {
             if (Objects.equals(eventEntry.name, name)) {
                 return eventEntry;
@@ -125,16 +127,7 @@ public class LWEventHandler {
 
     }
 
-    public static boolean shouldEvent(int max, int magicNumber) {
-        int number = randInt(max);
-        return number == magicNumber;
-    }
-
-    public static int randInt(int max) {
-        return new Random().nextInt(max);
-    }
-
-    public static LuckyEventRarity getRandEventClass() {
+    private static LuckyEventRarity getRandEventClass() {
         int number = randInt(100);
 
         if (number >= 1 && number <= 70) return LuckyEventRarity.COMMON;
@@ -156,6 +149,11 @@ public class LWEventHandler {
 
         newEvent.event.doAction(event, world, location, player);
 
+    }
+
+    public static boolean shouldEvent(int max, int magicNumber) {
+        int number = randInt(max);
+        return number == magicNumber;
     }
 
 }
