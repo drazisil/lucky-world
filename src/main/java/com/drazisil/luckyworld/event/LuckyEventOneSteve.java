@@ -133,31 +133,37 @@ public class LuckyEventOneSteve extends LuckyEvent {
                     case 5:
                     case 15:
                     case 25:
+                    case 35:
                         blockSave.getBlock().setType(Material.GRAVEL);
                         break;
                     case 4:
                     case 14:
                     case 24:
+                    case 34:
                         blockSave.getBlock().setType(Material.TALL_SEAGRASS);
                         break;
                     case 3:
                     case 13:
                     case 23:
+                    case 33:
                         blockSave.getBlock().setType(Material.KELP);
                         break;
                     case 2:
                     case 12:
                     case 22:
+                    case 32:
                         blockSave.getBlock().setType(Material.FIRE_CORAL);
                         break;
                     case 1:
                     case 11:
                     case 21:
+                    case 31:
                         blockSave.getBlock().setType(Material.TUBE_CORAL);
                         break;
                     case 0:
                     case 10:
                     case 20:
+                    case 30:
                         blockSave.getBlock().setType(Material.SAND);
                         break;
 
@@ -173,6 +179,9 @@ public class LuckyEventOneSteve extends LuckyEvent {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> populateTank(blocksToChange), 10);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> savedBlocks.restoreAll(blocksToChange), 40);
 
     }
 
