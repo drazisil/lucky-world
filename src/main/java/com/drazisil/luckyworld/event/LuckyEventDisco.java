@@ -67,8 +67,7 @@ public class LuckyEventDisco extends LuckyEvent {
         savedBlocks.generateBlockSaveCube(location.clone(),
                 7, 7, 7, CENTER_OFFSET_Y, 1);
 
-        BlockSaveRecord blocksToChange
-                = new BlockSaveRecord();
+        BlockSaveRecord blocksToChange = new BlockSaveRecord();
         blocksToChange.generateBlockSaveCube(location.clone(),
                 7, 7, 7, CENTER_OFFSET_Y,  1);
 

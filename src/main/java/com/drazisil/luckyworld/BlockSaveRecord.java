@@ -24,8 +24,20 @@ public class BlockSaveRecord {
     private int width;
     private int depth;
 
+
+
+    private double leftSideX;
+    private double rightSideX;
+    private double frontSideZ;
+    private double backSideZ;
+    private double topSideY;
+    private double bottomSideY;
+
+    private final ArrayList<BlockSave> blocks = new ArrayList<>();
+
+    // Methods
     public double getLeftSideX() {
-        return Math.floor(leftSideX);
+        return Math.floor(this.leftSideX);
     }
 
     public double getRightSideX() {
@@ -43,15 +55,6 @@ public class BlockSaveRecord {
     public double getTopSideY() {  return Math.floor(topSideY);  }
 
     public double getBottomSideY() { return Math.floor(bottomSideY); }
-
-    private double leftSideX;
-    private double rightSideX;
-    private double frontSideZ;
-    private double backSideZ;
-    private double topSideY;
-    private double bottomSideY;
-
-    private final ArrayList<BlockSave> blocks = new ArrayList<>();
 
 
     private void setHeight(int height) {
@@ -76,7 +79,7 @@ public class BlockSaveRecord {
 
     public void generateBlockSaveCube(Location rawStartLocation,
                                       int height, int width, int depth,
-                                      CenterType centerType,
+                                      CenterType typeOfBox,
                                       int offsetY) {
 
         RoundLocation startLocation = cleanLocation(rawStartLocation.clone());
@@ -89,7 +92,7 @@ public class BlockSaveRecord {
         double startY = 0.0d;
         double startZ = 0.0d;
 
-        switch (centerType) {
+        switch (typeOfBox) {
             case CENTER:
                 startX = getSquareStartX(startLocation, width);
                 startY = getSquareStartY(startLocation, height);

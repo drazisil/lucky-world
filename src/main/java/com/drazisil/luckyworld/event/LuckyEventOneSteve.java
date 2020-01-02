@@ -105,7 +105,8 @@ public class LuckyEventOneSteve extends LuckyEvent {
         // Add bottom
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
             if (blockSave.getLocation().getY() > blocksToChange.getBottomSideY()
-                    && blockSave.getLocation().getY() < (blocksToChange.getBottomSideY() +3)) {
+                    && blockSave.getLocation().getY() < (blocksToChange.getBottomSideY() + 3)) {
+
                 if (!blocksToChange.isBorder(blockSave.getLocation())) {
                     blockSave.getBlock().setType(Material.SAND);
 

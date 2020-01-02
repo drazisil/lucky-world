@@ -11,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ class LWListener implements Listener {
         System.out.println(event.getEntityType() + " = " + event.getRadius());
         if (event.getEntityType().equals(PRIMED_TNT)) {
             event.setRadius(event.getRadius() * 20);
+
         }
 
     }
@@ -45,10 +48,12 @@ class LWListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         System.out.println(event.getEntityType());
         if (event.getEntityType().equals(PRIMED_TNT)) {
-            List<Block> blocks = event.blockList();
-            for (Block block: blocks
-                    ) {
-                block.getWorld().getBlockAt(block.getLocation()).setType(Material.GLOWSTONE);
+            List<Block> blocksThatWillExplode = event.blockList();
+            for (Block currentBlock: blocksThatWillExplode) {
+
+                World worldWhereExplosionWillHappen = currentBlock.getWorld();
+                Block blockInWorld = worldWhereExplosionWillHappen.getBlockAt(currentBlock.getLocation());
+                blockInWorld.setType(Material.GLOWSTONE);
 
             }
             event.setCancelled(true);
@@ -79,6 +84,7 @@ class LWListener implements Listener {
 
         // Handle overworld events
         if (world.getName().equals("overworld")) {
+
             // Fast fail if not a lucky event
             if (!shouldEvent(getMaxNumber(), getMagicNumber())) return;
 
@@ -87,6 +93,18 @@ class LWListener implements Listener {
 
 
 
+    }
+
+    @EventHandler
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Block clickedBlock = event.getClickedBlock();
+        ItemStack itemClickedWith = event.getItem();
+
+        if (clickedBlock.getType() == Material.EMERALD_BLOCK
+                && itemClickedWith.getType() == Material.STICK) {
+            System.out.println("It was so");
+        }
     }
 
 

@@ -73,6 +73,7 @@ public final class LuckyWorld extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new LWListener(), this);
 
+
         // Register command manager
         try {
             this.getCommand("lucky").setExecutor(new LWCommands());
