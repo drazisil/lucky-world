@@ -12,29 +12,49 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Structure;
 import org.bukkit.block.structure.UsageMode;
-import org.bukkit.entity.Dolphin;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Turtle;
+import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.ArrayList;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 import static com.drazisil.luckyworld.shared.LWUtilities.randInt;
+import static org.bukkit.GameRule.DO_MOB_SPAWNING;
 
 
 public class LuckyEventOneSteve extends LuckyEvent {
 
 
     private final LuckyWorld plugin = LuckyWorld.getInstance();
+    private boolean isActive = false;
+    private BukkitTask fightTickTask;
+    private Location priorLocation;
+    private Player player;
+    private Location boxCenter;
+    private World world;
+    private boolean isDoorOpen = false;
+    private ArrayList<Entity> enemiesLeft = new ArrayList<>();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location rawLocation, Player player) {
 
+        if (isActive) {
+            return;
+        }
+
+        this.priorLocation = rawLocation.clone();
+        this.player = player;
+        this.world = this.priorLocation.getWorld();
+        this.isActive = true;
+
         RoundLocation location = cleanLocation(rawLocation.clone());
 
-        Location boxCenter = location.clone();
+        this.boxCenter = location.clone();
         boxCenter.setY(150.0);
 
         int height = 50;
@@ -66,7 +86,7 @@ public class LuckyEventOneSteve extends LuckyEvent {
             RoundLocation blockLocation = blockSave.getLocation();
 
             if (blocksToChange.isBorder(blockLocation)) {
-                blockSave.getBlock().setType(Material.GLASS);
+                blockSave.getBlock().setType(Material.BARRIER);
 
             }
 
@@ -115,74 +135,79 @@ public class LuckyEventOneSteve extends LuckyEvent {
 
         }
 
-        // Populate seafloor
-        for (BlockSave blockSave: blocksToChange.getBlocks()) {
-            if (blockSave.getLocation().getY() > (blocksToChange.getBottomSideY() + 2)
-                    && blockSave.getLocation().getY() < (blocksToChange.getBottomSideY() + 4)) {
-                if (!blocksToChange.isBorder(blockSave.getLocation())) {
-
-                int spawnNum = randInt(60);
-                switch (spawnNum) {
-                    case 7:
-                        blockSave.getBlock().setType(Material.SOUL_SAND);
-                        break;
-
-//                    case 6:
-//                        blockSave.getBlock().setType(Material.MAGMA_BLOCK);
-//                        break;
-
-                    case 5:
-                    case 15:
-                    case 25:
-                    case 35:
-                        blockSave.getBlock().setType(Material.GRAVEL);
-                        break;
-                    case 4:
-                    case 14:
-                    case 24:
-                    case 34:
-                        blockSave.getBlock().setType(Material.TALL_SEAGRASS);
-                        break;
-                    case 3:
-                    case 13:
-                    case 23:
-                    case 33:
-                        blockSave.getBlock().setType(Material.KELP);
-                        break;
-                    case 2:
-                    case 12:
-                    case 22:
-                    case 32:
-                        blockSave.getBlock().setType(Material.FIRE_CORAL);
-                        break;
-                    case 1:
-                    case 11:
-                    case 21:
-                    case 31:
-                        blockSave.getBlock().setType(Material.TUBE_CORAL);
-                        break;
-                    case 0:
-                    case 10:
-                    case 20:
-                    case 30:
-                        blockSave.getBlock().setType(Material.SAND);
-                        break;
-
-                }
-                }
-
-            }
-        }
-
         // Place player
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (20 * 15), 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (6000), 1));
         player.teleport(boxCenter);
+        player.sendMessage(player.getName() + " enters the arena! Can they kill the enemies and escape alive?");
+
+
+        // Populate seafloor
+        populateSeafloor(blocksToChange);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> populateTank(blocksToChange), 10);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin, () -> savedBlocks.restoreAll(blocksToChange), 40);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(
+//                plugin, () -> savedBlocks.restoreAll(blocksToChange), 40);
+
+        fightTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
+                () -> fightTick(player, savedBlocks, blocksToChange), 20, 20);
+
+    }
+
+    public void fightTick(Entity player, BlockSaveRecord savedBlocks, BlockSaveRecord blocksToChange) {
+
+        System.out.println("Fight!");
+
+        if (!(this.isActive)) {
+            fightTickTask.cancel();
+        }
+
+        for (Entity enemy: enemiesLeft) {
+            if (enemy.isDead()) enemiesLeft.remove(enemy);
+        }
+
+        System.out.println("There are " + getRemainingEnemyCount() + " lights...er, not.");
+
+        if (!isDoorOpen && getRemainingEnemyCount() == 0) {
+            openDoor(10, blocksToChange);
+            isDoorOpen = true;
+        }
+
+        if (!(blocksToChange.isLocationInsideArea(player.getLocation()))) {
+            this.isActive = false;
+            savedBlocks.restoreAll(blocksToChange);
+            player.teleport(this.priorLocation);
+            priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, true);
+        }
+
+        if (player.isDead()) {
+            this.isActive = false;
+            savedBlocks.restoreAll(blocksToChange);
+            player.teleport(this.priorLocation);
+            priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, true);
+        }
+
+    }
+
+    private void openDoor(int doorSize, BlockSaveRecord blocksToChange) {
+        System.out.println("Behold!");
+        int doorX = ((int) blocksToChange.getLeftSideX());
+        int doorY = ((int) (blocksToChange.getTopSideY() - ((blocksToChange.getTopSideY() - blocksToChange.getBottomSideY()) / 2)));
+        int doorZ = ((int) (blocksToChange.getBackSideZ() - ((blocksToChange.getBackSideZ() - blocksToChange.getFrontSideZ()) / 2)));
+
+        System.out.println(doorX + ", " + doorY + ", " + doorZ);
+
+        BlockSaveRecord doorBlocks
+                = new BlockSaveRecord();
+        doorBlocks.generateBlockSaveCube(new Location(blocksToChange.getWorld(), doorX, doorY, doorZ),
+                doorSize, 3, doorSize, CENTER,  0);
+
+        for (BlockSave doorBlock: doorBlocks.getBlocks()) {
+            doorBlock.getBlock().setType(Material.AIR);
+        }
+
 
     }
 
@@ -199,12 +224,109 @@ public class LuckyEventOneSteve extends LuckyEvent {
                     World world = blockSave.getBlock().getWorld();
                     switch (spawnNum) {
                         case 5:
-                            world.spawn(blockSave.getLocation(), Dolphin.class);
+                            world.spawn(blockSave.getLocation(), TropicalFish.class);
                             break;
 
                         case 4:
                             world.spawn(blockSave.getLocation(), Turtle.class);
                             break;
+                    }
+                }
+
+            }
+        }
+        addEnemies();
+        priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, false);
+    }
+
+    public int getRemainingEnemyCount() {
+        if (this.enemiesLeft.isEmpty()) {
+            return 0;
+        }
+        return this.enemiesLeft.size();
+    }
+
+    public boolean shouldReset(BlockSaveRecord savedBlocks, BlockSaveRecord blocksToChange) {
+        if (getRemainingEnemyCount() == 0) {
+            this.isActive = false;
+            savedBlocks.restoreAll(blocksToChange);
+            player.teleport(this.priorLocation);
+            return true;
+        }
+        return false;
+    }
+
+    private void addEnemyToList(Entity enemy) {
+        this.enemiesLeft.add(enemy);
+    }
+
+    private void addEnemies() {
+        for (int i = 1; i < 4; i++) {
+            Zombie drowned = world.spawn(boxCenter, Drowned.class);
+
+            ItemStack trident = new ItemStack(Material.TRIDENT);
+
+            drowned.getEquipment().setItemInMainHand(trident);
+            drowned.getEquipment().setItemInMainHandDropChance(1.0f);
+            addEnemyToList(drowned);
+            System.out.println("One drowned enters...");
+        }
+
+    }
+
+    private void populateSeafloor(BlockSaveRecord blocksToChange) {
+        for (BlockSave blockSave: blocksToChange.getBlocks()) {
+            if (blockSave.getLocation().getY() > (blocksToChange.getBottomSideY() + 2)
+                    && blockSave.getLocation().getY() < (blocksToChange.getBottomSideY() + 4)) {
+                if (!blocksToChange.isBorder(blockSave.getLocation())) {
+
+                    int spawnNum = randInt(60);
+                    switch (spawnNum) {
+                        case 7:
+                            blockSave.getBlock().setType(Material.SOUL_SAND);
+                            break;
+
+//                    case 6:
+//                        blockSave.getBlock().setType(Material.MAGMA_BLOCK);
+//                        break;
+
+                        case 5:
+                        case 15:
+                        case 25:
+                        case 35:
+                            blockSave.getBlock().setType(Material.GRAVEL);
+                            break;
+                        case 4:
+                        case 14:
+                        case 24:
+                        case 34:
+                            blockSave.getBlock().setType(Material.TALL_SEAGRASS);
+                            break;
+                        case 3:
+                        case 13:
+                        case 23:
+                        case 33:
+                            blockSave.getBlock().setType(Material.KELP);
+                            break;
+                        case 2:
+                        case 12:
+                        case 22:
+                        case 32:
+                            blockSave.getBlock().setType(Material.FIRE_CORAL);
+                            break;
+                        case 1:
+                        case 11:
+                        case 21:
+                        case 31:
+                            blockSave.getBlock().setType(Material.TUBE_CORAL);
+                            break;
+                        case 0:
+                        case 10:
+                        case 20:
+                        case 30:
+                            blockSave.getBlock().setType(Material.SAND);
+                            break;
+
                     }
                 }
 

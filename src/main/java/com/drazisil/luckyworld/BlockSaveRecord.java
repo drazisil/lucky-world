@@ -3,6 +3,7 @@ package com.drazisil.luckyworld;
 import com.drazisil.luckyworld.shared.RoundLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
@@ -23,6 +24,7 @@ public class BlockSaveRecord {
     private int height;
     private int width;
     private int depth;
+    private World world;
 
 
 
@@ -81,6 +83,8 @@ public class BlockSaveRecord {
                                       int height, int width, int depth,
                                       CenterType typeOfBox,
                                       int offsetY) {
+
+        this.world = rawStartLocation.getWorld();
 
         RoundLocation startLocation = cleanLocation(rawStartLocation.clone());
 
@@ -211,5 +215,15 @@ public class BlockSaveRecord {
                 || y == this.getBottomSideY()
                 || z == this.getFrontSideZ()
                 || z == this.getBackSideZ();
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public boolean isLocationInsideArea(Location loc) {
+        return (loc.getX() > this.leftSideX && loc.getX() < this.rightSideX)
+                && (loc.getZ() > this.frontSideZ && loc.getZ() < this.getBackSideZ())
+                && (loc.getY() > this.getBottomSideY()  && loc.getY() < this.topSideY );
     }
 }
