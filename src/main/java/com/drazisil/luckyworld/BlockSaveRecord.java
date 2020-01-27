@@ -75,6 +75,19 @@ public class BlockSaveRecord {
         return blocks;
     }
 
+    public ArrayList<BlockSave> getBlocksByY(double y) {
+
+        ArrayList<BlockSave> yBlocks = new ArrayList<>();
+
+        for (BlockSave blockSave: this.blocks) {
+            if (blockSave.getLocation().getY() == y) {
+                yBlocks.add(blockSave);
+            }
+        }
+        return yBlocks;
+
+    }
+
     private void addBlock(BlockSave block) {
         this.blocks.add(block);
     }
