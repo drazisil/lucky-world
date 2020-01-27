@@ -47,7 +47,7 @@ public class LuckyEventHuge extends LuckyEvent {
         giant.getEquipment().setItemInMainHand(sword);
         giant.getEquipment().setItemInMainHandDropChance(1.0f);
 
-        giant.addPassenger(player);
+        giant.addPassenger(giantMount);
 
 
 

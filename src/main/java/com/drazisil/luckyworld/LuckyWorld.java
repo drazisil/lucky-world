@@ -70,8 +70,10 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventOneSteve(), "one_steve_enters"));
         LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventHuge(), "huge"));
-        LWEventHandler.registerEvent(ALWAYS, new LuckyEventEntry(
+        LWEventHandler.registerEvent(RARE, new LuckyEventEntry(
                 new LuckyEventWE(), "we"));
+        LWEventHandler.registerEvent(PARTS, new LuckyEventEntry(
+                new LuckyEventSign(), "sign"));
 
 
 

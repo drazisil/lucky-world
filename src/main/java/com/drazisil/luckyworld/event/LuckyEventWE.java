@@ -23,6 +23,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.PARTS;
+import static com.drazisil.luckyworld.event.LWEventHandler.getEventByRarityAndName;
+
 public class LuckyEventWE extends LuckyEvent {
 
 
@@ -41,15 +44,26 @@ public class LuckyEventWE extends LuckyEvent {
             e.printStackTrace();
         }
 /* use the clipboard here */
+        Location newLocation = player.getLocation().clone();
+        newLocation.setY(225);
+
+        Location signLocation = newLocation.clone();
+        signLocation.add(2.0d, -1.0d, 5.0d);
+
+        newLocation.setYaw(0.0f);
+        player.teleport(newLocation);
+        newLocation.setY(newLocation.getY()-1);
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
-                    .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
+                    .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
                     // configure here
                     .build();
             Operations.complete(operation);
         } catch (WorldEditException e) {
             e.printStackTrace();
         }
+        getEventByRarityAndName(PARTS, "sign").event.doAction(null, world, signLocation, player);
+
     }
 }

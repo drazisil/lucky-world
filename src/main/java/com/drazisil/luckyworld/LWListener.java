@@ -1,12 +1,14 @@
 package com.drazisil.luckyworld;
 
 
+import com.drazisil.luckyworld.event.LWEventHandler;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import static com.drazisil.luckyworld.LuckyWorld.*;
@@ -58,6 +60,13 @@ class LWListener implements Listener {
 
 
     }
+
+    @EventHandler
+    public void onPlayerSleep(PlayerBedEnterEvent event) {
+        LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we").event.doAction(null, event.getPlayer().getWorld(), event.getPlayer().getLocation(), event.getPlayer());
+        event.setCancelled(true);
+    }
+
 
 //    @EventHandler
 //    public void onPlayerInteractEvent(PlayerInteractEvent event) {

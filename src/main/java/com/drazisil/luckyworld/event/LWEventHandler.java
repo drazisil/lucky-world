@@ -18,7 +18,8 @@ public class LWEventHandler {
         COMMON,
         UNCOMMON,
         RARE,
-        ALWAYS
+        ALWAYS,
+        PARTS
     }
 
     private static final ArrayList<LuckyEventEntry> eventsCommon = new ArrayList<>();
@@ -28,6 +29,8 @@ public class LWEventHandler {
     private static final ArrayList<LuckyEventEntry> eventsRare = new ArrayList<>();
 
     private static final ArrayList<LuckyEventEntry> eventsAlways = new ArrayList<>();
+
+    private static final ArrayList<LuckyEventEntry> eventsParts = new ArrayList<>();
 
     public static void registerEvent(LuckyEventRarity rarity, LuckyEventEntry entry) {
         switch (rarity) {
@@ -42,6 +45,10 @@ public class LWEventHandler {
                 break;
             case ALWAYS:
                 eventsAlways.add(entry);
+                break;
+            case PARTS:
+                eventsParts.add(entry);
+                break;
         }
     }
 
@@ -68,6 +75,9 @@ public class LWEventHandler {
                 return eventsRare;
             case ALWAYS:
                 return eventsAlways;
+            case PARTS:
+                return eventsParts;
+
         }
         return null;
     }
