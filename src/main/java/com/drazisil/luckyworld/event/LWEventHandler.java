@@ -52,10 +52,10 @@ public class LWEventHandler {
         }
     }
 
-    static Material getRandomMaterial(ArrayList<Material> set) {
-        int max = set.size();
+    static Material getRandomMaterial() {
+        int max = LuckyEventDisco.coloredGlassBlocks.size();
         int randIndex = randInt(max);
-        return set.get(randIndex);
+        return LuckyEventDisco.coloredGlassBlocks.get(randIndex);
     }
 
 

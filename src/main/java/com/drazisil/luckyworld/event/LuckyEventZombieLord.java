@@ -7,11 +7,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+
 
 public class LuckyEventZombieLord extends LuckyEvent {
 
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
@@ -19,10 +22,13 @@ public class LuckyEventZombieLord extends LuckyEvent {
 
        Zombie zombie = world.spawn(location, Zombie.class);
 
-       zombie.getEquipment().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
-       zombie.getEquipment().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
-       zombie.getEquipment().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
-       zombie.getEquipment().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+        EntityEquipment zombieEquipment = zombie.getEquipment();
+        assert zombieEquipment != null;
+
+       zombieEquipment.setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+       zombieEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+       zombieEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+       zombieEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
 
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         sword.addEnchantment(Enchantment.DAMAGE_ALL, 5);
@@ -30,8 +36,8 @@ public class LuckyEventZombieLord extends LuckyEvent {
         sword.addEnchantment(Enchantment.LOOT_BONUS_MOBS, 3);
         sword.addEnchantment(Enchantment.MENDING, 1);
 
-       zombie.getEquipment().setItemInMainHand(sword);
-       zombie.getEquipment().setItemInMainHandDropChance(1.0f);
+       zombieEquipment.setItemInMainHand(sword);
+       zombieEquipment.setItemInMainHandDropChance(1.0f);
 
     }
 }

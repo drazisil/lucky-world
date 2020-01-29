@@ -14,6 +14,7 @@ import org.bukkit.block.Structure;
 import org.bukkit.block.structure.UsageMode;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -34,11 +35,10 @@ public class LuckyEventOneSteve extends LuckyEvent {
     private boolean isActive = false;
     private BukkitTask fightTickTask;
     private Location priorLocation;
-    private Player player;
     private Location boxCenter;
     private World world;
     private boolean isDoorOpen = false;
-    private ArrayList<Entity> enemiesLeft = new ArrayList<>();
+    private final ArrayList<Entity> enemiesLeft = new ArrayList<>();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location rawLocation, Player player) {
@@ -48,7 +48,6 @@ public class LuckyEventOneSteve extends LuckyEvent {
         }
 
         this.priorLocation = rawLocation.clone();
-        this.player = player;
         this.world = this.priorLocation.getWorld();
         this.isActive = true;
 
@@ -148,15 +147,12 @@ public class LuckyEventOneSteve extends LuckyEvent {
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> populateTank(blocksToChange), 10);
 
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(
-//                plugin, () -> savedBlocks.restoreAll(blocksToChange), 40);
-
         fightTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
                 () -> fightTick(player, savedBlocks, blocksToChange), 20, 20);
 
     }
 
-    public void fightTick(Entity player, BlockSaveRecord savedBlocks, BlockSaveRecord blocksToChange) {
+    private void fightTick(Entity player, BlockSaveRecord savedBlocks, BlockSaveRecord blocksToChange) {
 
         System.out.println("Fight!");
 
@@ -164,34 +160,35 @@ public class LuckyEventOneSteve extends LuckyEvent {
             fightTickTask.cancel();
         }
 
-        for (Entity enemy: enemiesLeft) {
-            if (enemy.isDead()) enemiesLeft.remove(enemy);
-        }
+        enemiesLeft.removeIf(Entity::isDead);
 
         System.out.println("There are " + getRemainingEnemyCount() + " lights...er, not.");
 
         if (!isDoorOpen && getRemainingEnemyCount() == 0) {
-            openDoor(10, blocksToChange);
+            openDoor(blocksToChange);
             isDoorOpen = true;
         }
+
+        World priorWorld = priorLocation.getWorld();
+        assert priorWorld != null;
 
         if (!(blocksToChange.isLocationInsideArea(player.getLocation()))) {
             this.isActive = false;
             savedBlocks.restoreAll(blocksToChange);
             player.teleport(this.priorLocation);
-            priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, true);
+            priorWorld.setGameRule(DO_MOB_SPAWNING, true);
         }
 
         if (player.isDead()) {
             this.isActive = false;
             savedBlocks.restoreAll(blocksToChange);
             player.teleport(this.priorLocation);
-            priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, true);
+            priorWorld.setGameRule(DO_MOB_SPAWNING, true);
         }
 
     }
 
-    private void openDoor(int doorSize, BlockSaveRecord blocksToChange) {
+    private void openDoor(BlockSaveRecord blocksToChange) {
         System.out.println("Behold!");
         int doorX = ((int) blocksToChange.getLeftSideX());
         int doorY = ((int) (blocksToChange.getTopSideY() - ((blocksToChange.getTopSideY() - blocksToChange.getBottomSideY()) / 2)));
@@ -202,7 +199,7 @@ public class LuckyEventOneSteve extends LuckyEvent {
         BlockSaveRecord doorBlocks
                 = new BlockSaveRecord();
         doorBlocks.generateBlockSaveCube(new Location(blocksToChange.getWorld(), doorX, doorY, doorZ),
-                doorSize, 3, doorSize, CENTER,  0);
+                10, 3, 10, CENTER,  0);
 
         for (BlockSave doorBlock: doorBlocks.getBlocks()) {
             doorBlock.getBlock().setType(Material.AIR);
@@ -236,24 +233,16 @@ public class LuckyEventOneSteve extends LuckyEvent {
             }
         }
         addEnemies();
-        priorLocation.getWorld().setGameRule(DO_MOB_SPAWNING, false);
+        World priorWorld = priorLocation.getWorld();
+        assert priorWorld != null;
+        priorWorld.setGameRule(DO_MOB_SPAWNING, false);
     }
 
-    public int getRemainingEnemyCount() {
+    private int getRemainingEnemyCount() {
         if (this.enemiesLeft.isEmpty()) {
             return 0;
         }
         return this.enemiesLeft.size();
-    }
-
-    public boolean shouldReset(BlockSaveRecord savedBlocks, BlockSaveRecord blocksToChange) {
-        if (getRemainingEnemyCount() == 0) {
-            this.isActive = false;
-            savedBlocks.restoreAll(blocksToChange);
-            player.teleport(this.priorLocation);
-            return true;
-        }
-        return false;
     }
 
     private void addEnemyToList(Entity enemy) {
@@ -266,8 +255,11 @@ public class LuckyEventOneSteve extends LuckyEvent {
 
             ItemStack trident = new ItemStack(Material.TRIDENT);
 
-            drowned.getEquipment().setItemInMainHand(trident);
-            drowned.getEquipment().setItemInMainHandDropChance(1.0f);
+            EntityEquipment drownedEquipment = drowned.getEquipment();
+            assert drownedEquipment != null;
+
+            drownedEquipment.setItemInMainHand(trident);
+            drownedEquipment.setItemInMainHandDropChance(1.0f);
             addEnemyToList(drowned);
             System.out.println("One drowned enters...");
         }

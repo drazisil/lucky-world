@@ -2,6 +2,7 @@ package com.drazisil.luckyworld;
 
 
 import com.drazisil.luckyworld.event.LWEventHandler;
+import com.drazisil.luckyworld.event.LuckyEventEntry;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -18,8 +19,6 @@ import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
 
 class LWListener implements Listener {
-
-    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -44,7 +43,7 @@ class LWListener implements Listener {
 
         // Handle new_world events
         if (worldName.equals("new_world")) {
-            worldHandler.handleBlockBreakEvent(event, world, location, player);
+            worldHandler.handleBlockBreakEvent(event, location, player);
         }
 
 
@@ -63,7 +62,9 @@ class LWListener implements Listener {
 
     @EventHandler
     public void onPlayerSleep(PlayerBedEnterEvent event) {
-        LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we").event.doAction(null, event.getPlayer().getWorld(), event.getPlayer().getLocation(), event.getPlayer());
+        LuckyEventEntry luckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we");
+        assert luckyEvent != null;
+        luckyEvent.event.doAction(null, event.getPlayer().getWorld(), event.getPlayer().getLocation(), event.getPlayer());
         event.setCancelled(true);
     }
 

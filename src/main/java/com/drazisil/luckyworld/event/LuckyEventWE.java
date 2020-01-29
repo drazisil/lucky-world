@@ -15,24 +15,24 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.PARTS;
-import static com.drazisil.luckyworld.event.LWEventHandler.getEventByRarityAndName;
 
+@SuppressWarnings("unused")
 public class LuckyEventWE extends LuckyEvent {
 
     private BukkitTask gateTriggerTickTask;
@@ -40,23 +40,24 @@ public class LuckyEventWE extends LuckyEvent {
 
     private final LuckyWorld plugin = LuckyWorld.getInstance();
     private double currentGateY;
-
+    private boolean isRunning = false;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
+        this.isRunning = true;
         Clipboard clipboard = null;
 
         File file = new File( LuckyWorld.getInstance().getDataFolder()+ "/../WorldEdit/schematics/" + "FloatingCastle.schem");
 
         ClipboardFormat format = ClipboardFormats.findByFile(file);
+        assert format != null;
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
             clipboard = reader.read();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-/* use the clipboard here */
+
+        /* use the clipboard here */
         Location newLocation = player.getLocation().clone();
         newLocation.setY(225);
 
@@ -67,6 +68,7 @@ public class LuckyEventWE extends LuckyEvent {
         player.teleport(newLocation);
         newLocation.setY(newLocation.getY()-1);
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
+            assert clipboard != null;
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
                     .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
@@ -76,7 +78,11 @@ public class LuckyEventWE extends LuckyEvent {
         } catch (WorldEditException e) {
             e.printStackTrace();
         }
-        getEventByRarityAndName(PARTS, "sign").event.doAction(null, world, signLocation, player);
+        LuckyEventEntry signEvent = LWEventHandler.getEventByRarityAndName(PARTS, "sign");
+        assert signEvent != null;
+        signEvent.event.doAction(null, world, signLocation, player);
+
+
 
         // Blocks to change
         BlockSaveRecord gateTriggerBox
@@ -88,7 +94,10 @@ public class LuckyEventWE extends LuckyEvent {
         BlockSaveRecord gateBox
                 = new BlockSaveRecord();
         gateBox.generateBlockSaveCube(newLocation.clone().add(0.0, 7.0, -19),
-                10, 7, 3, CENTER,  0);
+                15, 7, 3, CENTER,  0);
+
+        System.out.println(gateBox.getTopSideY() + ", " + gateBox.getBottomSideY());
+
         this.currentGateY = gateBox.getTopSideY();
 
         gateTriggerTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
@@ -100,14 +109,17 @@ public class LuckyEventWE extends LuckyEvent {
         if (blockSaveRecord.isLocationInsideArea(player.getLocation())) {
             player.sendMessage("Uh Oh...");
 
+            player.getWorld().playSound(blockSaveRecord.getStartLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
+
+
             gateTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
-                    () -> gateTick(player, gateBox), 20, 20);
+                    () -> gateTick(gateBox), 20, 20);
 
             gateTriggerTickTask.cancel();
         }
     }
 
-    private void gateTick(Player player, BlockSaveRecord blockSaveRecord) {
+    private void gateTick(BlockSaveRecord blockSaveRecord) {
 
         ArrayList<BlockSave> gateBlocks = blockSaveRecord.getBlocksByY(this.currentGateY);
         for (BlockSave blockSave: gateBlocks) {
@@ -118,12 +130,45 @@ public class LuckyEventWE extends LuckyEvent {
 
         }
         this.currentGateY  = this.currentGateY - 1.0d;
-
-        System.out.println(this.currentGateY);
+        World world = blockSaveRecord.getWorld();
+        world.playSound(blockSaveRecord.getStartLocation(), Sound.BLOCK_GRINDSTONE_USE, 1.0f, 1.0f);
 
         if (this.currentGateY < blockSaveRecord.getBottomSideY()) {
+
+            spawnZombiePod(world, blockSaveRecord.getStartLocation().clone().add(-16, 0.0, -5.0));
+
+            spawnZombiePod(world, blockSaveRecord.getStartLocation().clone().add(16, 0.0, -5.0));
+
             gateTickTask.cancel();
+            this.isRunning = false;
         }
 
+    }
+
+    private void spawnZombiePod(World world, Location location) {
+        for (int i = 1; i < 30; i++) {
+            Zombie zombie = world.spawn(location, Zombie.class);
+            zombie.setBaby(new Random().nextBoolean());
+            EntityEquipment zombieEquipment = zombie.getEquipment();
+            assert zombieEquipment != null;
+
+            zombieEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+            zombieEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+            zombieEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+
+            ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
+//            sword.addEnchantment(Enchantment.DAMAGE_ALL, 5);
+//            sword.addEnchantment(Enchantment.DURABILITY, 3);
+//            sword.addEnchantment(Enchantment.LOOT_BONUS_MOBS, 3);
+//            sword.addEnchantment(Enchantment.MENDING, 1);
+
+            zombieEquipment.setItemInMainHand(sword);
+        }
+
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isRunning() {
+        return isRunning;
     }
 }

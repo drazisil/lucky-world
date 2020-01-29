@@ -13,8 +13,6 @@ import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
 public class BlockSaveRecord {
 
-    private final LuckyWorld plugin = LuckyWorld.getInstance();
-
     public enum CenterType {
         NONE,
         CENTER,
@@ -28,6 +26,7 @@ public class BlockSaveRecord {
 
 
 
+    private RoundLocation startLocation;
     private double leftSideX;
     private double rightSideX;
     private double frontSideZ;
@@ -42,6 +41,7 @@ public class BlockSaveRecord {
         return Math.floor(this.leftSideX);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public double getRightSideX() {
         return Math.floor(rightSideX);
     }
@@ -100,6 +100,7 @@ public class BlockSaveRecord {
         this.world = rawStartLocation.getWorld();
 
         RoundLocation startLocation = cleanLocation(rawStartLocation.clone());
+        this.startLocation = startLocation;
 
         setHeight(height);
         setWidth(width);
@@ -132,7 +133,7 @@ public class BlockSaveRecord {
 
         Location cursorLocation = startLocation.clone();
 
-        for (double y = startY; y > (startY - depth); y -= 1.0d) {
+        for (double y = startY; y > (startY - height); y -= 1.0d) {
             cursorLocation.setY(y);
 
             for (double x = startX; x < (startX + width); x += 1.0d) {
@@ -207,16 +208,6 @@ public class BlockSaveRecord {
 
     }
 
-    private boolean compareFloorDouble(double d1, double d2) {
-        return Math.floor(d1) == Math.floor(d2);
-    }
-
-    private boolean compareFloorLocation(RoundLocation l1, RoundLocation l2) {
-        return (compareFloorDouble(l1.getX(), l2.getX())
-                && compareFloorDouble(l1.getY(), l2.getY())
-                && compareFloorDouble(l1.getZ(), l2.getZ()));
-    }
-
     public boolean isBorder(RoundLocation loc) {
         double x = loc.getX();
         double y = loc.getY();
@@ -238,5 +229,20 @@ public class BlockSaveRecord {
         return (loc.getX() > this.leftSideX && loc.getX() < this.rightSideX)
                 && (loc.getZ() > this.frontSideZ && loc.getZ() < this.getBackSideZ())
                 && (loc.getY() > this.getBottomSideY()  && loc.getY() < this.topSideY );
+    }
+
+    public RoundLocation getStartLocation() {
+        return startLocation;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder blockString = new StringBuilder();
+        for (BlockSave blockSave: this.blocks) {
+            String blockLine = blockSave.getLocation().toString() + ": " + blockSave.getType().toString();
+            blockString.append(" | ").append(blockLine);
+        }
+        return blockString.toString();
+
     }
 }

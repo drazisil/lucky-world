@@ -21,17 +21,17 @@ public class LuckyEventParrotDance extends LuckyEvent {
 
         block.setType(Material.JUKEBOX);
 
-        Jukebox jukeBlock = ((Jukebox) block.getState());
+        Jukebox jukeboxBlock = ((Jukebox) block.getState());
 
         for (int i = 1; i <= 30; i++) {
             world.spawn(location, Parrot.class);
         }
 
-        jukeBlock.setRecord(new ItemStack(Material.MUSIC_DISC_13));
+        jukeboxBlock.setRecord(new ItemStack(Material.MUSIC_DISC_13));
 
-        jukeBlock.setPlaying(Material.MUSIC_DISC_13);
+        jukeboxBlock.setPlaying(Material.MUSIC_DISC_13);
 
-        jukeBlock.update();
+        jukeboxBlock.update();
 
     }
 }

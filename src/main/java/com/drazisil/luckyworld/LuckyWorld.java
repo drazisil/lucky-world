@@ -4,6 +4,7 @@ import com.drazisil.luckyworld.event.*;
 import com.drazisil.luckyworld.world.WorldHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
@@ -83,8 +84,10 @@ public final class LuckyWorld extends JavaPlugin {
 
         // Register command manager
         try {
-            this.getCommand("lucky").setExecutor(new LWCommands());
-            this.getCommand("lucky").setTabCompleter(new LWTabComplete());
+            PluginCommand luckyCommand = this.getCommand("lucky");
+            assert luckyCommand != null;
+            luckyCommand.setExecutor(new LWCommands());
+            luckyCommand.setTabCompleter(new LWTabComplete());
 
         } catch (NullPointerException x) {
             logger.error("Error registering commands, quitting.");

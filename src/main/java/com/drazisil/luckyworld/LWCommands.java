@@ -8,18 +8,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 import static com.drazisil.luckyworld.LuckyWorld.logger;
-import static com.drazisil.luckyworld.event.LWEventHandler.*;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
+import static com.drazisil.luckyworld.event.LWEventHandler.*;
 
 class LWCommands implements CommandExecutor {
 
 
     // This method is called, when somebody uses our command
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args) {
 
         if (!(sender instanceof Player)) return false;
 
@@ -52,7 +53,7 @@ class LWCommands implements CommandExecutor {
                 switch (rarity.toLowerCase()) {
                     case "common":
                         ArrayList<String> commonEvents = getEventsNamesByType(COMMON);
-                        commonEvents.remove(commonEvents.indexOf("multiblock"));
+                        commonEvents.remove("multiblock");
                         sender.sendMessage(commonEvents.toString());
                         return true;
                     case "uncommon":

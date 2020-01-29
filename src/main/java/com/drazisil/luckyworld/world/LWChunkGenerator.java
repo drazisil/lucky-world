@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 class LWChunkGenerator extends ChunkGenerator {
@@ -32,7 +33,8 @@ class LWChunkGenerator extends ChunkGenerator {
      * @return ChunkData containing the types for each block created by this
      *     generator
      */
-    public ChunkData generateChunkData(World world, Random random, int x, int z, LWChunkGenerator.BiomeGrid biome) {
+    @Nonnull
+    public ChunkData generateChunkData(@Nonnull World world, @Nonnull Random random, int x, int z, @Nonnull LWChunkGenerator.BiomeGrid biome) {
         ChunkData chunkData = createChunkData(world);
 
         chunkData.setRegion(0, 0, 0, 16, 1, 16, Material.BEDROCK);

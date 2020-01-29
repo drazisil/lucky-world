@@ -32,6 +32,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
 
         // Get new world spawn
         World newWorld = getWorld("new_world");
+        assert newWorld != null;
         Location newSpawn;
         newSpawn = cleanLocation(newWorld.getSpawnLocation());
 
@@ -49,7 +50,6 @@ public class LuckyEventNewWorld extends LuckyEvent {
         // Set and move player to spawn
         player.setGameMode(GameMode.SURVIVAL);
         PotionEffect superJump = new PotionEffect(PotionEffectType.CONDUIT_POWER, getDurationBySeconds(numSeconds), 80);
-        PotionEffect superWater = new PotionEffect(PotionEffectType.DOLPHINS_GRACE, getDurationBySeconds(numSeconds), 80);
         player.setInvulnerable(true);
         player.addPotionEffect(superJump);
 

@@ -10,6 +10,7 @@ import org.bukkit.block.data.type.TNT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
@@ -30,7 +31,9 @@ public class LuckyEventMultiBlock extends LuckyEvent {
         Block block = event.getBlock();
         Collection<ItemStack> oldDrops = block.getDrops();
 
-        if (player.getEquipment().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) isSilk = true;
+        EntityEquipment equipment = player.getEquipment();
+        assert  equipment != null;
+        if (equipment.getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) isSilk = true;
 
 
         // Exit if empty

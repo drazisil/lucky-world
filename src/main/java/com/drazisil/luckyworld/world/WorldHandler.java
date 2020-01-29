@@ -2,7 +2,6 @@ package com.drazisil.luckyworld.world;
 
 import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
-import com.drazisil.luckyworld.LuckyWorld;
 import org.bukkit.*;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
@@ -10,17 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.logging.Logger;
-
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
 import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
 import static org.bukkit.Bukkit.createWorld;
 import static org.bukkit.Bukkit.dispatchCommand;
 
 public class WorldHandler {
-
-    private final LuckyWorld plugin = LuckyWorld.getInstance();
-    private Logger logger = plugin.getLogger();
 
     private Location newSpawnLocation;
 
@@ -36,6 +30,7 @@ public class WorldHandler {
         newWorldCreator.generateStructures(true);
 
         newWorld = createWorld(newWorldCreator);
+        assert newWorld != null;
 
         newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
@@ -52,7 +47,6 @@ public class WorldHandler {
     }
 
     public void handleBlockBreakEvent(BlockBreakEvent event,
-                                      World world,
                                       Location location,
                                       Player player) {
 
