@@ -6,8 +6,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
@@ -244,5 +247,15 @@ public class BlockSaveRecord {
         }
         return blockString.toString();
 
+    }
+
+    public void clearEntities() {
+        Collection<Entity> entitiesInBox = world.getNearbyEntities(this.startLocation, width, height, depth);
+        for (Entity entity: entitiesInBox) {
+            if (!(entity instanceof Player)) {
+                entity.remove();
+
+            }
+        }
     }
 }

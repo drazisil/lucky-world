@@ -19,8 +19,11 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.PARTS;
 
 @SuppressWarnings("unused")
@@ -40,11 +44,16 @@ public class LuckyEventWE extends LuckyEvent {
 
     private final LuckyWorld plugin = LuckyWorld.getInstance();
     private double currentGateY;
-    private boolean isRunning = false;
+    private boolean isRunning;
+    private BukkitTask playerTrackTickTask;
+    private Location priorLocation;
+    private boolean hasSpawned = false;
+    public boolean needsCancel = false;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
         this.isRunning = true;
+        this.priorLocation = location.clone();
         Clipboard clipboard = null;
 
         File file = new File( LuckyWorld.getInstance().getDataFolder()+ "/../WorldEdit/schematics/" + "FloatingCastle.schem");
@@ -82,13 +91,17 @@ public class LuckyEventWE extends LuckyEvent {
         assert signEvent != null;
         signEvent.event.doAction(null, world, signLocation, player);
 
-
-
         // Blocks to change
         BlockSaveRecord gateTriggerBox
                 = new BlockSaveRecord();
         gateTriggerBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -13),
                 3, 11, 9, CENTER,  0);
+
+        // Blocks to track
+        BlockSaveRecord castleBoundsBox
+                = new BlockSaveRecord();
+        castleBoundsBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -19),
+                27, 54, 54, CENTER_OFFSET_Y,  11);
 
         // Blocks to change
         BlockSaveRecord gateBox
@@ -96,13 +109,30 @@ public class LuckyEventWE extends LuckyEvent {
         gateBox.generateBlockSaveCube(newLocation.clone().add(0.0, 7.0, -19),
                 15, 7, 3, CENTER,  0);
 
-        System.out.println(gateBox.getTopSideY() + ", " + gateBox.getBottomSideY());
-
         this.currentGateY = gateBox.getTopSideY();
 
         gateTriggerTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
                 () -> gateTriggerTick(player, gateTriggerBox, gateBox), 20, 20);
 
+        playerTrackTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
+                () -> playerTrackTick(castleBoundsBox, player), 40, 20);
+
+    }
+
+    private void playerTrackTick(BlockSaveRecord castleBoundsBox, Player player) {
+        if (!castleBoundsBox.isLocationInsideArea(player.getLocation()) || player.isDead()) {
+
+            player.teleport(priorLocation.subtract(0, 1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            castleBoundsBox.clearEntities();
+            for (BlockSave blockSave: castleBoundsBox.getBlocks()) {
+                blockSave.getBlock().setType(Material.AIR);
+            }
+            this.hasSpawned = false;
+            gateTriggerTickTask.cancel();
+            playerTrackTickTask.cancel();
+            this.isRunning = false;
+            this.needsCancel = true;
+        }
     }
 
     private void gateTriggerTick(Player player, BlockSaveRecord blockSaveRecord, BlockSaveRecord gateBox) {
@@ -113,17 +143,17 @@ public class LuckyEventWE extends LuckyEvent {
 
 
             gateTickTask = Bukkit.getScheduler().runTaskTimer(plugin,
-                    () -> gateTick(gateBox), 20, 20);
+                    () -> gateTick(gateBox, player), 20, 20);
 
             gateTriggerTickTask.cancel();
         }
     }
 
-    private void gateTick(BlockSaveRecord blockSaveRecord) {
+    private void gateTick(BlockSaveRecord blockSaveRecord, Player player) {
 
         ArrayList<BlockSave> gateBlocks = blockSaveRecord.getBlocksByY(this.currentGateY);
         for (BlockSave blockSave: gateBlocks) {
-            if (blockSave.getType() == Material.NETHER_BRICK_FENCE || blockSave.getType() == Material.NETHER_BRICK_WALL) {
+            if (blockSave.getType() == Material.NETHER_BRICK_FENCE || blockSave.getType() == Material.RED_NETHER_BRICK_WALL) {
                 blockSave.getBlock().setType(Material.AIR);
             }
 
@@ -133,14 +163,25 @@ public class LuckyEventWE extends LuckyEvent {
         World world = blockSaveRecord.getWorld();
         world.playSound(blockSaveRecord.getStartLocation(), Sound.BLOCK_GRINDSTONE_USE, 1.0f, 1.0f);
 
-        if (this.currentGateY < blockSaveRecord.getBottomSideY()) {
+        if (this.currentGateY < blockSaveRecord.getBottomSideY() && !hasSpawned) {
 
-            spawnZombiePod(world, blockSaveRecord.getStartLocation().clone().add(-16, 0.0, -5.0));
+            LuckyEventEntry hugeEvent = LWEventHandler.getEventByRarityAndName(PARTS, "huge");
+            assert hugeEvent != null;
+            double playerY = player.getLocation().getY();
+            Location gateLocation = blockSaveRecord.getStartLocation().clone();
+//            gateLocation.setY(playerY);
+            hugeEvent.event.doAction(null, world, gateLocation.clone().add(-0.0, 0.0, -16.0), player);
 
-            spawnZombiePod(world, blockSaveRecord.getStartLocation().clone().add(16, 0.0, -5.0));
+            spawnZombiePod(world, gateLocation.clone().add(-16, 0.0, -5.0));
+
+            spawnZombiePod(world, gateLocation.clone().add(16, 0.0, -5.0));
+
+            this.hasSpawned = true;
+
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 120, 1));
 
             gateTickTask.cancel();
-            this.isRunning = false;
+
         }
 
     }
@@ -167,8 +208,11 @@ public class LuckyEventWE extends LuckyEvent {
 
     }
 
-    @SuppressWarnings("unused")
     public boolean isRunning() {
-        return isRunning;
+        return this.isRunning;
+    }
+
+    public Location getPriorLocation() {
+        return this.priorLocation;
     }
 }

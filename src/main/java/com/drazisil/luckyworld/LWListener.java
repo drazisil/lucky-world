@@ -3,12 +3,14 @@ package com.drazisil.luckyworld;
 
 import com.drazisil.luckyworld.event.LWEventHandler;
 import com.drazisil.luckyworld.event.LuckyEventEntry;
+import com.drazisil.luckyworld.event.LuckyEventWE;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -58,6 +60,20 @@ class LWListener implements Listener {
 
 
 
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent damageEvent) {
+        System.out.println(damageEvent.getCause() + ", " + damageEvent.getEntity());
+        if (damageEvent.getCause() == EntityDamageEvent.DamageCause.FALL && damageEvent.getEntity() instanceof  Player) {
+            LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we");
+            assert rawLuckyEvent != null;
+            LuckyEventWE luckyEvent = (LuckyEventWE) rawLuckyEvent.event;
+            if (luckyEvent.needsCancel) {
+                damageEvent.setCancelled(true);
+                luckyEvent.needsCancel = false;
+            }
+        }
     }
 
     @EventHandler
