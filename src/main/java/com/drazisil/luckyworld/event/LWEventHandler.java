@@ -19,7 +19,8 @@ public class LWEventHandler {
         UNCOMMON,
         RARE,
         ALWAYS,
-        PARTS
+        PARTS,
+        DREAM
     }
 
     private static final ArrayList<LuckyEventEntry> eventsCommon = new ArrayList<>();
@@ -31,6 +32,8 @@ public class LWEventHandler {
     private static final ArrayList<LuckyEventEntry> eventsAlways = new ArrayList<>();
 
     private static final ArrayList<LuckyEventEntry> eventsParts = new ArrayList<>();
+
+    private static final ArrayList<LuckyEventEntry> eventsDreams = new ArrayList<>();
 
     public static void registerEvent(LuckyEventRarity rarity, LuckyEventEntry entry) {
         switch (rarity) {
@@ -48,6 +51,9 @@ public class LWEventHandler {
                 break;
             case PARTS:
                 eventsParts.add(entry);
+                break;
+            case DREAM:
+                eventsDreams.add(entry);
                 break;
         }
     }
@@ -77,7 +83,8 @@ public class LWEventHandler {
                 return eventsAlways;
             case PARTS:
                 return eventsParts;
-
+            case DREAM:
+                return eventsDreams;
         }
         return null;
     }
@@ -92,6 +99,8 @@ public class LWEventHandler {
                 return getRandomEventFromSet(eventsRare);
             case ALWAYS:
                 return getRandomEventFromSet(eventsAlways);
+            case DREAM:
+                return getRandomEventFromSet(eventsDreams);
         }
         return getRandomEventFromSet(eventsCommon);
     }
@@ -106,6 +115,8 @@ public class LWEventHandler {
                 return LuckyEventRarity.RARE;
             case "always":
                 return LuckyEventRarity.ALWAYS;
+            case "dream":
+                return LuckyEventRarity.DREAM;
         }
         return null;
     }

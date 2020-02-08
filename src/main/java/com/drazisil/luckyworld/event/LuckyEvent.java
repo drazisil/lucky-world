@@ -5,8 +5,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class LuckyEvent {
+public abstract class LuckyEvent {
 
-    public void doAction(BlockBreakEvent event, World world, Location location, Player player) {}
+    public abstract void doAction(BlockBreakEvent event, World world, Location location, Player player);
 
 }

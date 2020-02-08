@@ -80,7 +80,7 @@ class LWCommands implements CommandExecutor {
                 rarity = args[1];
                 String eventName = args[2].toLowerCase();
 
-                LuckyEventEntry eventEntry;
+                LuckyEventEntry eventEntry = null;
 
                 switch (rarity.toLowerCase()) {
                     case "common":
@@ -94,6 +94,12 @@ class LWCommands implements CommandExecutor {
                         break;
                     case "always":
                         eventEntry = getEventByRarityAndName(ALWAYS, eventName);
+                        break;
+                    case "parts":
+                        eventEntry = getEventByRarityAndName(PARTS, eventName);
+                        break;
+                    case "dream":
+                        eventEntry = getEventByRarityAndName(DREAM, eventName);
                         break;
                     default:
                         sender.sendMessage("That's not a valid rarity, please try again.");

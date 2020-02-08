@@ -15,7 +15,7 @@ public final class LuckyWorld extends JavaPlugin {
     public static final Logger logger = LogManager.getLogger();
     private static LuckyWorld instance;
     public static WorldHandler worldHandler;
-    static final String name = "LuckyWorld";
+    static String name = "LuckyWorld";
     private static int maxNumber;
     private static int magicNumber;
 
@@ -75,6 +75,9 @@ public final class LuckyWorld extends JavaPlugin {
                 new LuckyEventWE(), "we"));
         LWEventHandler.registerEvent(PARTS, new LuckyEventEntry(
                 new LuckyEventSign(), "sign"));
+        LWEventHandler.registerEvent(DREAM, new LuckyEventEntry(
+                new EventClassroom(), "classroom"));
+
 
 
 

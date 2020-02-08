@@ -84,6 +84,19 @@ class LWListener implements Listener {
         event.setCancelled(true);
     }
 
+//    @EventHandler
+//    public void onVehicleExit(VehicleExitEvent event) {
+//        if (event.getExited() instanceof Player) {
+//            Player player = (Player) event.getExited();
+//            String vehicleName = event.getVehicle().getCustomName();
+//            assert vehicleName != null;
+//            if (vehicleName.equals("classroom_seat")) {
+//                player.sendMessage("Uh uh uh!");
+//                event.setCancelled(true);
+//            }
+//        }
+//    }
+
 
 //    @EventHandler
 //    public void onPlayerInteractEvent(PlayerInteractEvent event) {
