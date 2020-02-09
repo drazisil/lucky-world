@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -46,11 +45,14 @@ public final class LuckyWorld extends JavaPlugin {
         InputStream inputStream = instance.getResource("schematics/" + schematicName + ".schem");
         URL inputURL = instance.getClassLoader().getResource("schematics/" + schematicName + ".schem");
         try {
-            URLConnection inputURLConnection = inputURL.openConnection();
-            InputStream inputRawStream = inputURLConnection.getInputStream();
+//            URLConnection inputURLConnection = inputURL.openConnection();
+//            System.out.println(inputURLConnection.getContentEncoding());
+//            InputStream inputRawStream = inputURLConnection.getInputStream();
             File classroomFile = new File(instance.getDataFolder() + "/schematics/" + schematicName + ".schem");
+            //noinspection ResultOfMethodCallIgnored
             new File(instance.getDataFolder() + "/schematics").mkdirs();
-            LWUtilities.copy(inputRawStream, classroomFile);
+            assert inputURL != null;
+            LWUtilities.copy(inputURL, classroomFile);
 
         } catch (IOException e) {
             e.printStackTrace();

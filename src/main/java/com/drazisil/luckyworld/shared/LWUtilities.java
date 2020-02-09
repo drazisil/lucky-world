@@ -19,6 +19,8 @@ import org.bukkit.World;
 import org.bukkit.block.*;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Random;
 
 public class LWUtilities {
@@ -110,12 +112,10 @@ public class LWUtilities {
         Clipboard clipboard = null;
 
         File file = new File( LuckyWorld.getInstance().getDataFolder()  + "/schematics/" + schematicName + ".schem");
-        LuckyWorld.logger.info("115 " + file.toString());
         ClipboardFormat format = ClipboardFormats.findByFile(file);
-        LuckyWorld.logger.info("117 " + format.toString());
         try  {
             FileInputStream inputStream = new FileInputStream(file);
-            LuckyWorld.logger.info("120 " +inputStream.toString());
+            assert format != null;
             ClipboardReader reader = format.getReader(inputStream);
             clipboard = reader.read();
         } catch (IOException e) {
@@ -147,38 +147,62 @@ public class LWUtilities {
      * this copy(); method copies the specified file from your jar
      *     to your /plugins/<pluginName>/ folder
      */
-    public static void copy(InputStream in, File file) {
-        try {
-
-            BufferedReader input = new BufferedReader( new InputStreamReader( in ) );
-
-            Writer writer = new OutputStreamWriter( new FileOutputStream( file ) );
-
-            int c;
-
-            while( ( c = input.read() ) != -1 ) {
-
-                writer.write( (char)c );
-            }
-
-            writer.close();
-
-            input.close();
+    public static void copy(URL inUrl, File file) throws IOException {
 
 
-
-//            OutputStream out = new FileOutputStream(file);
-//            byte[] buf = new byte[1024 * 64];
-//            int len;
-//            while((len=in.read(buf, 0, buf.length))>0){
-//                System.out.println("156 " + len);
-//                out.write(buf,0,len);
-//            }
-//            out.close();
-//            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        URLConnection uc = inUrl.openConnection();
+        String contentType = uc.getContentType();
+        int contentLength = uc.getContentLength();
+        if (contentType.startsWith("text/") || contentLength == -1) {
+            throw new IOException("This is not a binary file.");
         }
+        InputStream raw = uc.getInputStream();
+        InputStream in = new BufferedInputStream(raw);
+        byte[] data = new byte[contentLength];
+        int bytesRead;
+        int offset = 0;
+        while (offset < contentLength) {
+            bytesRead = in.read(data, offset, data.length - offset);
+            if (bytesRead == -1)
+                break;
+            offset += bytesRead;
+        }
+        in.close();
+
+        if (offset != contentLength) {
+            throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
+        }
+
+//        String filename = inUrl.getFile().substring(filename.lastIndexOf('/') + 1);
+        FileOutputStream out = new FileOutputStream(file);
+        out.write(data);
+        out.flush();
+        out.close();
+
+//        try {
+//            byte[] buffer = new byte[4096];
+//            int n;
+//
+//            OutputStream output = new FileOutputStream( file );
+//            while ((n = in.read(buffer)) != -1)
+//            {
+//                output.write(buffer, 0, n);
+//            }
+//            output.close();
+//
+//
+////            OutputStream out = new FileOutputStream(file);
+////            byte[] buf = new byte[1024 * 64];
+////            int len;
+////            while((len=in.read(buf, 0, buf.length))>0){
+////                System.out.println("156 " + len);
+////                out.write(buf,0,len);
+////            }
+////            out.close();
+////            in.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
 }
