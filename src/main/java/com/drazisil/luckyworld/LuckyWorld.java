@@ -1,11 +1,18 @@
 package com.drazisil.luckyworld;
 
 import com.drazisil.luckyworld.event.*;
+import com.drazisil.luckyworld.shared.LWUtilities;
 import com.drazisil.luckyworld.world.WorldHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -33,6 +40,21 @@ public final class LuckyWorld extends JavaPlugin {
         // Create world
         worldHandler = new WorldHandler();
 
+        // Copy assets
+        String schematicName = "Classroom";
+
+        InputStream inputStream = instance.getResource("schematics/" + schematicName + ".schem");
+        URL inputURL = instance.getClassLoader().getResource("schematics/" + schematicName + ".schem");
+        try {
+            URLConnection inputURLConnection = inputURL.openConnection();
+            InputStream inputRawStream = inputURLConnection.getInputStream();
+            File classroomFile = new File(instance.getDataFolder() + "/schematics/" + schematicName + ".schem");
+            new File(instance.getDataFolder() + "/schematics").mkdirs();
+            LWUtilities.copy(inputRawStream, classroomFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Register events
         LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(

@@ -19,14 +19,25 @@ import org.bukkit.potion.PotionEffectType;
 public class EventClassroom extends LuckyEvent {
 
     private final int effectDuration = (20 * 60 * 60);
+    public boolean needsCancel = false;
+    private boolean isRunning = false;
+    private Location priorLocation = null;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
-        RoundLocation deskSeatSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(location.clone()).add(0, -1, -3);
+        this.isRunning = true;
+        this.priorLocation = location.clone();
+
+        Location classroomSpawnLoc = player.getLocation().clone();
+        classroomSpawnLoc.setY(225);
+
+        LWUtilities.loadAndPlaceSchematic(world, classroomSpawnLoc, "Classroom");
+
+        RoundLocation deskSeatSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(classroomSpawnLoc.clone()).add(0, -1, -3);
         Pig playerSeat = makeDeskChair(world, deskSeatSpawnLoc);
 
-        RoundLocation deskSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(location.clone()).add(0, 0, -4);
+        RoundLocation deskSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(classroomSpawnLoc.clone()).add(0, 0, -4);
         makeDesk(world, deskSpawnLoc);
 
 
@@ -127,4 +138,7 @@ public class EventClassroom extends LuckyEvent {
     }
 
 
+    public void reset() {
+
+    }
 }

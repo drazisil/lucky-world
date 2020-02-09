@@ -1,6 +1,7 @@
 package com.drazisil.luckyworld;
 
 
+import com.drazisil.luckyworld.event.EventClassroom;
 import com.drazisil.luckyworld.event.LWEventHandler;
 import com.drazisil.luckyworld.event.LuckyEventEntry;
 import com.drazisil.luckyworld.event.LuckyEventWE;
@@ -13,6 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 import static com.drazisil.luckyworld.LuckyWorld.*;
 import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
@@ -84,18 +86,25 @@ class LWListener implements Listener {
         event.setCancelled(true);
     }
 
-//    @EventHandler
-//    public void onVehicleExit(VehicleExitEvent event) {
-//        if (event.getExited() instanceof Player) {
-//            Player player = (Player) event.getExited();
-//            String vehicleName = event.getVehicle().getCustomName();
-//            assert vehicleName != null;
-//            if (vehicleName.equals("classroom_seat")) {
-//                player.sendMessage("Uh uh uh!");
-//                event.setCancelled(true);
-//            }
-//        }
-//    }
+    @EventHandler
+    public void onVehicleExit(VehicleExitEvent event) {
+        if (event.getExited() instanceof Player) {
+            Player player = (Player) event.getExited();
+            String vehicleName = event.getVehicle().getCustomName();
+            assert vehicleName != null;
+            if (vehicleName.equals("classroom_seat")) {
+                LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+                assert rawLuckyEvent != null;
+                EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
+                if (luckyEvent.needsCancel) {
+                    luckyEvent.needsCancel = false;
+                    luckyEvent.reset();
+                } else
+                    player.sendMessage("Uh uh uh!");
+                event.setCancelled(true);
+            }
+        }
+    }
 
 
 //    @EventHandler

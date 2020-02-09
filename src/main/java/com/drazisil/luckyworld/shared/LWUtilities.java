@@ -1,9 +1,24 @@
 package com.drazisil.luckyworld.shared;
 
+import com.drazisil.luckyworld.LuckyWorld;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.*;
 
+import java.io.*;
 import java.util.Random;
 
 public class LWUtilities {
@@ -88,6 +103,81 @@ public class LWUtilities {
             case LECTERN:
                 ((Lectern) block.getState()).getInventory().clear();
                 break;
+        }
+    }
+
+    public static void loadAndPlaceSchematic(World world, Location newLocation, String schematicName) {
+        Clipboard clipboard = null;
+
+        File file = new File( LuckyWorld.getInstance().getDataFolder()  + "/schematics/" + schematicName + ".schem");
+        LuckyWorld.logger.info("115 " + file.toString());
+        ClipboardFormat format = ClipboardFormats.findByFile(file);
+        LuckyWorld.logger.info("117 " + format.toString());
+        try  {
+            FileInputStream inputStream = new FileInputStream(file);
+            LuckyWorld.logger.info("120 " +inputStream.toString());
+            ClipboardReader reader = format.getReader(inputStream);
+            clipboard = reader.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /* use the clipboard here */
+
+        newLocation.setYaw(0.0f);
+        newLocation.setY(newLocation.getY()-1);
+        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
+            assert clipboard != null;
+            Operation operation = new ClipboardHolder(clipboard)
+                    .createPaste(editSession)
+                    .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
+
+                    // configure here
+                    .build();
+            Operations.complete(operation);
+        } catch (WorldEditException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    /*
+     * this copy(); method copies the specified file from your jar
+     *     to your /plugins/<pluginName>/ folder
+     */
+    public static void copy(InputStream in, File file) {
+        try {
+
+            BufferedReader input = new BufferedReader( new InputStreamReader( in ) );
+
+            Writer writer = new OutputStreamWriter( new FileOutputStream( file ) );
+
+            int c;
+
+            while( ( c = input.read() ) != -1 ) {
+
+                writer.write( (char)c );
+            }
+
+            writer.close();
+
+            input.close();
+
+
+
+//            OutputStream out = new FileOutputStream(file);
+//            byte[] buf = new byte[1024 * 64];
+//            int len;
+//            while((len=in.read(buf, 0, buf.length))>0){
+//                System.out.println("156 " + len);
+//                out.write(buf,0,len);
+//            }
+//            out.close();
+//            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
