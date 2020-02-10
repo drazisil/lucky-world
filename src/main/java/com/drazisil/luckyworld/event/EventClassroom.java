@@ -16,6 +16,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
+
 public class EventClassroom extends LuckyEvent {
 
     private final int effectDuration = (20 * 60 * 60);
@@ -29,19 +31,24 @@ public class EventClassroom extends LuckyEvent {
         this.isRunning = true;
         this.priorLocation = location.clone();
 
-        Location classroomSpawnLoc = player.getLocation().clone();
+        RoundLocation rawLocation = cleanLocation(location);
+
+        RoundLocation classroomSpawnLoc = rawLocation.clone();
         classroomSpawnLoc.setY(225);
 
         LWUtilities.loadAndPlaceSchematic(world, classroomSpawnLoc, "Classroom");
 
-        RoundLocation deskSeatSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(classroomSpawnLoc.clone()).add(0, -1, -3);
-        Pig playerSeat = makeDeskChair(world, deskSeatSpawnLoc);
-
-        RoundLocation deskSpawnLoc = (RoundLocation) LWUtilities.cleanLocation(classroomSpawnLoc.clone()).add(0, 0, -4);
-        makeDesk(world, deskSpawnLoc);
+        RoundLocation deskSeatSpawnLoc = (RoundLocation) classroomSpawnLoc.clone().add(0, -1, 0);
 
 
-        Location seatLocation = playerSeat.getLocation().clone();
+        // Player Seat
+        Pig playerSeat = makeDesk(world, deskSeatSpawnLoc);
+
+
+        RoundLocation seat1Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, -3);
+        Pig seat1 = makeDesk(world, seat1Location);
+
+        RoundLocation seatLocation = classroomSpawnLoc.clone();
         player.teleport(new Location(world, seatLocation.getX(), seatLocation.getY(), seatLocation.getZ(), 180.0f, 0.0f));
         playerSeat.addPassenger(player);
 
@@ -65,6 +72,14 @@ public class EventClassroom extends LuckyEvent {
 
     }
 
+    private Pig makeDesk(World world, RoundLocation location) {
+        Pig playerSeat = makeDeskChair(world, location);
+
+        RoundLocation deskSpawnLoc = (RoundLocation) cleanLocation(location.clone()).add(0, 1, -1);
+        makeDeskDesk(world, deskSpawnLoc);
+        return  playerSeat;
+    }
+
     private void placeSign(RoundLocation location, Material material, BlockFace face) {
         RoundLocation rightDeskSeatLoc = location;
         Block trapdoorRightSeatBlock = location.getWorld().getBlockAt(rightDeskSeatLoc);
@@ -74,7 +89,7 @@ public class EventClassroom extends LuckyEvent {
         trapdoorRightSeatBlock.setBlockData(trapdoorRightSeatData);
     }
 
-    private void makeDesk(World world, Location location) {
+    private void makeDeskDesk(World world, RoundLocation location) {
         Block trapdoorDeskBlock = world.getBlockAt(location.clone());
         trapdoorDeskBlock.setType(Material.BIRCH_TRAPDOOR);
         TrapDoor trapdoorDeskData = (TrapDoor) trapdoorDeskBlock.getBlockData();
@@ -98,7 +113,7 @@ public class EventClassroom extends LuckyEvent {
 
     }
 
-    private Pig makeDeskChair(World world, Location location) {
+    private Pig makeDeskChair(World world, RoundLocation location) {
         Location deskSeatSpawnLoc = location;
 
         world.getBlockAt(deskSeatSpawnLoc).setType(Material.ACACIA_SLAB);
@@ -139,6 +154,15 @@ public class EventClassroom extends LuckyEvent {
 
 
     public void reset() {
+        this.needsCancel = false;
+        setRunning(false);
+    }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 }

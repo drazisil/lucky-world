@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -65,6 +66,21 @@ class LWListener implements Listener {
     }
 
     @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        String entityCustomName = event.getEntity().getCustomName();
+        assert entityCustomName != null;
+        if (entityCustomName.equals("classroom_seat")) {
+            LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+            assert rawLuckyEvent != null;
+            EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
+            if (luckyEvent.isRunning()) {
+                event.getEntity().eject();
+                luckyEvent.reset();
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerDamage(EntityDamageEvent damageEvent) {
         System.out.println(damageEvent.getCause() + ", " + damageEvent.getEntity());
         if (damageEvent.getCause() == EntityDamageEvent.DamageCause.FALL && damageEvent.getEntity() instanceof  Player) {
@@ -96,12 +112,13 @@ class LWListener implements Listener {
                 LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
                 assert rawLuckyEvent != null;
                 EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
-                if (luckyEvent.needsCancel) {
-                    luckyEvent.needsCancel = false;
+                if (!luckyEvent.isRunning() || luckyEvent.needsCancel || event.getVehicle().isDead()) {
                     luckyEvent.reset();
-                } else
+                } else {
                     player.sendMessage("Uh uh uh!");
-                event.setCancelled(true);
+                    event.setCancelled(true);
+                }
+
             }
         }
     }
