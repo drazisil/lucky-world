@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -103,6 +105,17 @@ class LWListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerSay(AsyncPlayerChatEvent event) {
+        if (event.getMessage().equals("Mischief Managed")) {
+            event.getPlayer().sendMessage("Ok");
+            LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+            assert rawLuckyEvent != null;
+            EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
+            luckyEvent.reset();
+        }
+    }
+
+    @EventHandler
     public void onVehicleExit(VehicleExitEvent event) {
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
@@ -120,6 +133,13 @@ class LWListener implements Listener {
                 }
 
             }
+        }
+    }
+
+    @EventHandler
+    public void onExplosionPrimeEvent(ExplosionPrimeEvent event) {
+        if (event.getEntity().getCustomName().equals("classmate")) {
+            event.setCancelled(true);
         }
     }
 

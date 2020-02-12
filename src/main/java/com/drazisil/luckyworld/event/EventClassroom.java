@@ -9,8 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
@@ -44,13 +43,57 @@ public class EventClassroom extends LuckyEvent {
         // Player Seat
         Pig playerSeat = makeDesk(world, deskSeatSpawnLoc);
 
-
-        RoundLocation seat1Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, -3);
-        Pig seat1 = makeDesk(world, seat1Location);
-
         RoundLocation seatLocation = classroomSpawnLoc.clone();
         player.teleport(new Location(world, seatLocation.getX(), seatLocation.getY(), seatLocation.getZ(), 180.0f, 0.0f));
         playerSeat.addPassenger(player);
+
+
+        // Seat 1
+        RoundLocation seat1Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, -3);
+        Pig seat1 = makeDesk(world, seat1Location);
+
+        Husk classmate1 = world.spawn(seat1Location, Husk.class);
+        classmate1.setCustomName("classmate");
+        classmate1.setCustomNameVisible(false);
+        classmate1.setBaby(true);
+        classmate1.setInvulnerable(true);
+
+        seat1.addPassenger(classmate1);
+
+        // Seat 2
+        RoundLocation seat2Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, -3);
+        Pig seat2 = makeDesk(world, seat2Location);
+
+        Zombie classmate2 = world.spawn(seat2Location, Zombie.class);
+        classmate2.setCustomName("classmate");
+        classmate2.setCustomNameVisible(false);
+        classmate2.setBaby(true);
+        classmate2.setInvulnerable(true);
+
+        seat2.addPassenger(classmate2);
+
+        // Seat 3
+        RoundLocation seat3Location = (RoundLocation) deskSeatSpawnLoc.clone().add(0, 0, -3);
+        Pig seat3 = makeDesk(world, seat3Location);
+
+        Drowned classmate3 = world.spawn(seat3Location, Drowned.class);
+        classmate3.setCustomName("classmate");
+        classmate3.setCustomNameVisible(false);
+        classmate3.setBaby(true);
+        classmate3.setInvulnerable(true);
+
+        seat3.addPassenger(classmate3);
+
+        // Seat 4
+        RoundLocation seat4Location = (RoundLocation) deskSeatSpawnLoc.clone().add(+3, 0, -3);
+        Pig seat4 = makeDesk(world, seat4Location);
+
+        Creeper classmate4 = world.spawn(seat4Location, Creeper.class);
+        classmate4.setCustomName("classmate");
+        classmate4.setCustomNameVisible(false);
+        classmate4.setInvulnerable(true);
+
+        seat4.addPassenger(classmate4);
 
 
 //        RoundLocation leftDeskSeatLoc = (RoundLocation) deskSeatSpawnLoc.clone().add(-1.0, 1.0, -0.0);
@@ -119,6 +162,7 @@ public class EventClassroom extends LuckyEvent {
         world.getBlockAt(deskSeatSpawnLoc).setType(Material.ACACIA_SLAB);
         RideableMinecart rideableMinecart = world.spawn(deskSeatSpawnLoc.clone().add(0.5, 0.5, 0.5), RideableMinecart.class);
         rideableMinecart.setRotation(90, 0);
+        rideableMinecart.setDisplayBlock(null);
 
         Pig pigSeat = world.spawn(deskSeatSpawnLoc, Pig.class);
         pigSeat.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, effectDuration, 1));
@@ -132,15 +176,8 @@ public class EventClassroom extends LuckyEvent {
 
         rideableMinecart.addPassenger(pigSeat);
 
-        RoundLocation leftDeskSeatLoc = (RoundLocation) deskSeatSpawnLoc.clone().add(-1.0, 1.0, 0.0);
-        placeSign(leftDeskSeatLoc, Material.DARK_OAK_WALL_SIGN, BlockFace.WEST);
-
-        RoundLocation rightDeskSeatLoc = (RoundLocation) deskSeatSpawnLoc.clone().add(1.0, 1.0, 0.0);
-        placeSign(rightDeskSeatLoc, Material.DARK_OAK_WALL_SIGN, BlockFace.EAST);
-
-
-        Block trapdoorSeatBlock = world.getBlockAt(deskSeatSpawnLoc.clone().add(0.0, 1.0, 0.0));
-        trapdoorSeatBlock.setType(Material.DARK_OAK_TRAPDOOR);
+        Block slabSeatBotom = world.getBlockAt(deskSeatSpawnLoc.clone().add(0.0, 1.0, 0.0));
+        slabSeatBotom.setType(Material.DARK_OAK_SLAB);
 
         Block trapdoorBackSeatBlock = world.getBlockAt(deskSeatSpawnLoc.clone().add(0.0, 1.0, 1.0));
         trapdoorBackSeatBlock.setType(Material.DARK_OAK_TRAPDOOR);
