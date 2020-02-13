@@ -4,6 +4,7 @@ import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
 import com.drazisil.luckyworld.shared.RoundLocation;
+import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
@@ -62,15 +64,23 @@ public class LuckyEventOneSteve extends LuckyEvent {
 
         // Saved blocks
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
-        savedBlocks.generateBlockSaveCube(boxCenter.clone(),
-                height, width, depth, CENTER,  0);
+        try {
+            savedBlocks.generateBlockSaveCube(boxCenter.clone(),
+                    height, width, depth, CENTER,  new VecOffset(0, 0, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         // Blocks to change
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
-        blocksToChange.generateBlockSaveCube(boxCenter.clone(),
-                height, width, depth, CENTER,  0);
+        try {
+            blocksToChange.generateBlockSaveCube(boxCenter.clone(),
+                    height, width, depth, CENTER, new VecOffset(0, 0, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         // Fill with water
@@ -170,20 +180,20 @@ public class LuckyEventOneSteve extends LuckyEvent {
         }
 
         World priorWorld = priorLocation.getWorld();
-        assert priorWorld != null;
+
 
         if (!(blocksToChange.isLocationInsideArea(player.getLocation()))) {
             this.isActive = false;
             savedBlocks.restoreAll(blocksToChange);
             player.teleport(this.priorLocation);
-            priorWorld.setGameRule(DO_MOB_SPAWNING, true);
+            Objects.requireNonNull(priorWorld).setGameRule(DO_MOB_SPAWNING, true);
         }
 
         if (player.isDead()) {
             this.isActive = false;
             savedBlocks.restoreAll(blocksToChange);
             player.teleport(this.priorLocation);
-            priorWorld.setGameRule(DO_MOB_SPAWNING, true);
+            Objects.requireNonNull(priorWorld).setGameRule(DO_MOB_SPAWNING, true);
         }
 
     }
@@ -198,8 +208,12 @@ public class LuckyEventOneSteve extends LuckyEvent {
 
         BlockSaveRecord doorBlocks
                 = new BlockSaveRecord();
-        doorBlocks.generateBlockSaveCube(new Location(blocksToChange.getWorld(), doorX, doorY, doorZ),
-                10, 3, 10, CENTER,  0);
+        try {
+            doorBlocks.generateBlockSaveCube(new Location(blocksToChange.getWorld(), doorX, doorY, doorZ),
+                    10, 3, 10, CENTER,  new VecOffset(0,0,0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for (BlockSave doorBlock: doorBlocks.getBlocks()) {
             doorBlock.getBlock().setType(Material.AIR);
@@ -234,8 +248,8 @@ public class LuckyEventOneSteve extends LuckyEvent {
         }
         addEnemies();
         World priorWorld = priorLocation.getWorld();
-        assert priorWorld != null;
-        priorWorld.setGameRule(DO_MOB_SPAWNING, false);
+
+        Objects.requireNonNull(priorWorld).setGameRule(DO_MOB_SPAWNING, false);
     }
 
     private int getRemainingEnemyCount() {
@@ -256,9 +270,9 @@ public class LuckyEventOneSteve extends LuckyEvent {
             ItemStack trident = new ItemStack(Material.TRIDENT);
 
             EntityEquipment drownedEquipment = drowned.getEquipment();
-            assert drownedEquipment != null;
 
-            drownedEquipment.setItemInMainHand(trident);
+
+            Objects.requireNonNull(drownedEquipment).setItemInMainHand(trident);
             drownedEquipment.setItemInMainHandDropChance(1.0f);
             addEnemyToList(drowned);
             System.out.println("One drowned enters...");

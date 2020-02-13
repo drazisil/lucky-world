@@ -7,17 +7,23 @@ import com.drazisil.luckyworld.event.LuckyEventEntry;
 import com.drazisil.luckyworld.event.LuckyEventWE;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.projectiles.ProjectileSource;
+
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.LuckyWorld.*;
 import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
@@ -68,27 +74,11 @@ class LWListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        String entityCustomName = event.getEntity().getCustomName();
-        assert entityCustomName != null;
-        if (entityCustomName.equals("classroom_seat")) {
-            LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
-            assert rawLuckyEvent != null;
-            EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
-            if (luckyEvent.isRunning()) {
-                event.getEntity().eject();
-                luckyEvent.reset();
-            }
-        }
-    }
-
-    @EventHandler
     public void onPlayerDamage(EntityDamageEvent damageEvent) {
-        System.out.println(damageEvent.getCause() + ", " + damageEvent.getEntity());
         if (damageEvent.getCause() == EntityDamageEvent.DamageCause.FALL && damageEvent.getEntity() instanceof  Player) {
             LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we");
-            assert rawLuckyEvent != null;
-            LuckyEventWE luckyEvent = (LuckyEventWE) rawLuckyEvent.event;
+
+            LuckyEventWE luckyEvent = (LuckyEventWE) Objects.requireNonNull(rawLuckyEvent).event;
             if (luckyEvent.needsCancel) {
                 damageEvent.setCancelled(true);
                 luckyEvent.needsCancel = false;
@@ -99,18 +89,19 @@ class LWListener implements Listener {
     @EventHandler
     public void onPlayerSleep(PlayerBedEnterEvent event) {
         LuckyEventEntry luckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.RARE, "we");
-        assert luckyEvent != null;
-        luckyEvent.event.doAction(null, event.getPlayer().getWorld(), event.getPlayer().getLocation(), event.getPlayer());
+
+        Objects.requireNonNull(luckyEvent).event.doAction(null, event.getPlayer().getWorld(), event.getPlayer().getLocation(), event.getPlayer());
         event.setCancelled(true);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
-    public void onPlayerSay(AsyncPlayerChatEvent event) {
+    public void onPlayerSay(PlayerChatEvent event) {
         if (event.getMessage().equals("Mischief Managed")) {
             event.getPlayer().sendMessage("Ok");
             LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
-            assert rawLuckyEvent != null;
-            EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
+
+            EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
             luckyEvent.reset();
         }
     }
@@ -119,51 +110,47 @@ class LWListener implements Listener {
     public void onVehicleExit(VehicleExitEvent event) {
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
-            String vehicleName = event.getVehicle().getCustomName();
-            assert vehicleName != null;
-            if (vehicleName.equals("classroom_seat")) {
-                LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
-                assert rawLuckyEvent != null;
-                EventClassroom luckyEvent = (EventClassroom) rawLuckyEvent.event;
-                if (!luckyEvent.isRunning() || luckyEvent.needsCancel || event.getVehicle().isDead()) {
-                    luckyEvent.reset();
-                } else {
-                    player.sendMessage("Uh uh uh!");
-                    event.setCancelled(true);
-                }
+            Vehicle vehicle = event.getVehicle();
+            if (vehicle.hasMetadata("classroom_name")) {
+                if (vehicle.getMetadata("classroom_name").get(0).asString().equals("classroom_seat")) {
+                    LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
 
+                    EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
+                    if (!luckyEvent.isRunning() || luckyEvent.needsCancel || event.getVehicle().isDead()) {
+                        luckyEvent.reset();
+                    } else {
+                        player.sendMessage("Uh uh uh!");
+                        event.setCancelled(true);
+                    }
+
+                }
             }
         }
     }
 
     @EventHandler
     public void onExplosionPrimeEvent(ExplosionPrimeEvent event) {
-        if (event.getEntity().getCustomName().equals("classmate")) {
-            event.setCancelled(true);
+        Entity entity = event.getEntity();
+        if (entity.hasMetadata("classroom_name")) {
+            if (entity.getMetadata("classroom_name").get(0).asString().equals("classmate")) {
+                event.setCancelled(true);
+            }
         }
     }
 
+    @EventHandler
+    public void onLaunchProjectileEvent(ProjectileLaunchEvent event) {
+        ProjectileSource projectileSource = event.getEntity().getShooter();
 
-//    @EventHandler
-//    public void onPlayerInteractEvent(PlayerInteractEvent event) {
-//        Player player = event.getPlayer();
-//        Block clickedBlock = event.getClickedBlock();
-//        ItemStack itemClickedWith = event.getItem();
-//
-//        if (clickedBlock.getType() == Material.EMERALD_BLOCK
-//                && itemClickedWith.getType() == Material.STICK) {
-//            System.out.println("It was so");
-//        }
-//    }
+        if (projectileSource instanceof LivingEntity) {
+            LivingEntity shooter = (LivingEntity) projectileSource;
+            if (shooter.hasMetadata("classroom_name")) {
+                if (shooter.getMetadata("classroom_name").get(0).asString().equals("classmate")) {
+                    event.setCancelled(true);
+                }
+            }
+        }
 
-//    @EventHandler
-//    public void onEntityEvent(EntityEvent event) {
-//
-//        if (event.getEntityType() == EntityType.GIANT) {
-//            System.out.println(event.getEntity());
-//        }
-//
-//    }
-
+    }
 }
 

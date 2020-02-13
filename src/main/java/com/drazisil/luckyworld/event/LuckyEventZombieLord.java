@@ -10,6 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
+
 
 public class LuckyEventZombieLord extends LuckyEvent {
 
@@ -23,9 +25,9 @@ public class LuckyEventZombieLord extends LuckyEvent {
        Zombie zombie = world.spawn(location, Zombie.class);
 
         EntityEquipment zombieEquipment = zombie.getEquipment();
-        assert zombieEquipment != null;
 
-       zombieEquipment.setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+
+       Objects.requireNonNull(zombieEquipment).setBoots(new ItemStack(Material.DIAMOND_BOOTS));
        zombieEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
        zombieEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
        zombieEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));

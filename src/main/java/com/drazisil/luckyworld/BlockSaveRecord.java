@@ -1,6 +1,7 @@
 package com.drazisil.luckyworld;
 
 import com.drazisil.luckyworld.shared.RoundLocation;
+import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,7 +20,7 @@ public class BlockSaveRecord {
     public enum CenterType {
         NONE,
         CENTER,
-        CENTER_OFFSET_Y,
+        CENTER_OFFSET,
     }
 
     private int height;
@@ -98,7 +99,7 @@ public class BlockSaveRecord {
     public void generateBlockSaveCube(Location rawStartLocation,
                                       int height, int width, int depth,
                                       CenterType typeOfBox,
-                                      int offsetY) {
+                                      VecOffset offset) {
 
         this.world = rawStartLocation.getWorld();
 
@@ -119,9 +120,10 @@ public class BlockSaveRecord {
                 startY = getSquareStartY(startLocation, height);
                 startZ = getSquareStartZ(startLocation, depth);
                 break;
-            case CENTER_OFFSET_Y:
+            case CENTER_OFFSET:
+                startLocation.add(offset);
                 startX = getSquareStartX(startLocation, width);
-                startY = getSquareStartY(startLocation, height) + offsetY;
+                startY = getSquareStartY(startLocation, height);
                 startZ = getSquareStartZ(startLocation, depth);
                 break;
 
@@ -177,7 +179,6 @@ public class BlockSaveRecord {
     }
 
     private double getSquareStartY(Location location, int height) {
-        assert (height % 2) == 0;
 
         int startOffset = (height - 1) / 2;
 

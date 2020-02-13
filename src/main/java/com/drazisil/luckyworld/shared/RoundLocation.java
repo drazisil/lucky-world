@@ -1,38 +1,37 @@
 package com.drazisil.luckyworld.shared;
 
-import com.sun.istack.internal.NotNull;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
+import javax.annotation.Nonnull;
+
 public class RoundLocation extends Location {
-    private double x;
-    private double y;
-    private double z;
 
     public RoundLocation(World world, double x, double y, double z) {
         super(world, x, y, z);
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public RoundLocation clone() {
         return (RoundLocation) super.clone();
     }
 
-    /**
-     * Adds the location by a vector.
-     *
-     * @see Vector
-     * @param vec Vector to use
-     * @return the same location
-     */
+    @SuppressWarnings("NullableProblems")
     @Override
-    @NotNull
-    public RoundLocation add(@NotNull Vector vec) {
-        this.x += vec.getX();
-        this.y += vec.getY();
-        this.z += vec.getZ();
+    @Nonnull
+    public RoundLocation add(Vector vec) {
+        return (RoundLocation) super.add(vec);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public RoundLocation add(VecOffset vec) {
+        setX(getBlockX() + vec.getX());
+        setY(getBlockY() + vec.getY());
+        setZ(getBlockZ() + vec.getZ());
         return this;
     }
+
+
 }

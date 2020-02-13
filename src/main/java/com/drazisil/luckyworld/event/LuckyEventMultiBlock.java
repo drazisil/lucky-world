@@ -14,6 +14,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 
@@ -32,8 +33,8 @@ public class LuckyEventMultiBlock extends LuckyEvent {
         Collection<ItemStack> oldDrops = block.getDrops();
 
         EntityEquipment equipment = player.getEquipment();
-        assert  equipment != null;
-        if (equipment.getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) isSilk = true;
+
+        if (Objects.requireNonNull(equipment).getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) isSilk = true;
 
 
         // Exit if empty

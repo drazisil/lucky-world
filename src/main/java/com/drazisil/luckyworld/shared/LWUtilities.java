@@ -21,6 +21,7 @@ import org.bukkit.block.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Objects;
 import java.util.Random;
 
 public class LWUtilities {
@@ -108,15 +109,18 @@ public class LWUtilities {
         }
     }
 
-    public static void loadAndPlaceSchematic(World world, Location newLocation, String schematicName) {
+    public static void loadAndPlaceSchematic(World world, Location location, String schematicName) {
+
+        RoundLocation newLocation = cleanLocation(location.clone());
+
         Clipboard clipboard = null;
 
         File file = new File( LuckyWorld.getInstance().getDataFolder()  + "/schematics/" + schematicName + ".schem");
         ClipboardFormat format = ClipboardFormats.findByFile(file);
         try  {
             FileInputStream inputStream = new FileInputStream(file);
-            assert format != null;
-            ClipboardReader reader = format.getReader(inputStream);
+
+            ClipboardReader reader = Objects.requireNonNull(format).getReader(inputStream);
             clipboard = reader.read();
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,11 +128,12 @@ public class LWUtilities {
 
         /* use the clipboard here */
 
-        newLocation.setYaw(0.0f);
-        newLocation.setY(newLocation.getY()-1);
+//        newLocation.setYaw(0.0f);
+//        newLocation.setY((newLocation.getY() - 1));
+
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
-            assert clipboard != null;
-            Operation operation = new ClipboardHolder(clipboard)
+
+            Operation operation = new ClipboardHolder(Objects.requireNonNull(clipboard))
                     .createPaste(editSession)
                     .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
 

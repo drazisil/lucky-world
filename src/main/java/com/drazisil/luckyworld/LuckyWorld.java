@@ -9,9 +9,9 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -21,7 +21,7 @@ public final class LuckyWorld extends JavaPlugin {
     public static final Logger logger = LogManager.getLogger();
     private static LuckyWorld instance;
     public static WorldHandler worldHandler;
-    static String name = "LuckyWorld";
+    static final String name = "LuckyWorld";
     private static int maxNumber;
     private static int magicNumber;
 
@@ -40,23 +40,23 @@ public final class LuckyWorld extends JavaPlugin {
         worldHandler = new WorldHandler();
 
         // Copy assets
-        String schematicName = "Classroom";
+        ArrayList<String> schematicNames = new ArrayList<>();
+        schematicNames.add("Classroom");
+        schematicNames.add("FloatingCastle");
 
-        InputStream inputStream = instance.getResource("schematics/" + schematicName + ".schem");
-        URL inputURL = instance.getClassLoader().getResource("schematics/" + schematicName + ".schem");
-        try {
-//            URLConnection inputURLConnection = inputURL.openConnection();
-//            System.out.println(inputURLConnection.getContentEncoding());
-//            InputStream inputRawStream = inputURLConnection.getInputStream();
-            File classroomFile = new File(instance.getDataFolder() + "/schematics/" + schematicName + ".schem");
-            //noinspection ResultOfMethodCallIgnored
-            new File(instance.getDataFolder() + "/schematics").mkdirs();
-            assert inputURL != null;
-            LWUtilities.copy(inputURL, classroomFile);
+        for (String schematicName: schematicNames) {
+            URL inputURL = instance.getClassLoader().getResource("schematics/" + schematicName + ".schem");
+            try {
+                File classroomFile = new File(instance.getDataFolder() + "/schematics/" + schematicName + ".schem");
+                //noinspection ResultOfMethodCallIgnored
+                new File(instance.getDataFolder() + "/schematics").mkdirs();
+                LWUtilities.copy(Objects.requireNonNull(inputURL), classroomFile);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
 
         // Register events
         LWEventHandler.registerEvent(COMMON, new LuckyEventEntry(
@@ -112,8 +112,8 @@ public final class LuckyWorld extends JavaPlugin {
         // Register command manager
         try {
             PluginCommand luckyCommand = this.getCommand("lucky");
-            assert luckyCommand != null;
-            luckyCommand.setExecutor(new LWCommands());
+
+            Objects.requireNonNull(luckyCommand).setExecutor(new LWCommands());
             luckyCommand.setTabCompleter(new LWTabComplete());
 
         } catch (NullPointerException x) {

@@ -39,6 +39,7 @@ class LWTabComplete implements TabCompleter {
                         commands.add("uncommon");
                         commands.add("rare");
                         commands.add("always");
+                        commands.add("dream");
                         return commands;
                 }
 

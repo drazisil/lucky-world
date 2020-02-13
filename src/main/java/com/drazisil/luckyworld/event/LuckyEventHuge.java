@@ -10,6 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
+
 @SuppressWarnings("DuplicatedCode")
 public class LuckyEventHuge extends LuckyEvent {
 
@@ -19,8 +21,8 @@ public class LuckyEventHuge extends LuckyEvent {
 
         Zombie giantRider = world.spawn(location, Zombie.class);
         EntityEquipment giantRiderEquipment = giantRider.getEquipment();
-        assert giantRiderEquipment != null;
-        giantRiderEquipment.setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+
+        Objects.requireNonNull(giantRiderEquipment).setBoots(new ItemStack(Material.DIAMOND_BOOTS));
         giantRiderEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
         giantRiderEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
         giantRiderEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
@@ -33,8 +35,8 @@ public class LuckyEventHuge extends LuckyEvent {
         Giant giant = world.spawn(location, Giant.class);
 
         EntityEquipment giantEquipment = giant.getEquipment();
-        assert  giantEquipment != null;
-        giantEquipment.setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+
+        Objects.requireNonNull(giantEquipment).setBoots(new ItemStack(Material.DIAMOND_BOOTS));
         giantEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
         giantEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
         giantEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));

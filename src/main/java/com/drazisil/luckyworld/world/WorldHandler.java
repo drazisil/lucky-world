@@ -2,6 +2,7 @@ package com.drazisil.luckyworld.world;
 
 import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
+import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.*;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
@@ -9,7 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
+import java.util.Objects;
+
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
 import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
 import static org.bukkit.Bukkit.createWorld;
 import static org.bukkit.Bukkit.dispatchCommand;
@@ -30,9 +33,8 @@ public class WorldHandler {
         newWorldCreator.generateStructures(true);
 
         newWorld = createWorld(newWorldCreator);
-        assert newWorld != null;
 
-        newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        Objects.requireNonNull(newWorld).setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, true);
         newWorld.setFullTime(100);
@@ -71,7 +73,7 @@ public class WorldHandler {
         BlockSaveRecord blocksToChange
                 = new BlockSaveRecord();
         blocksToChange.generateBlockSaveCube(getSpawnLocation().clone(),
-                1, 5, 5, CENTER_OFFSET_Y,  -1);
+                1, 5, 5, CENTER_OFFSET,  new VecOffset(0.0, -1.0, 0.0));
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
             blockSave.getBlock().setType(Material.QUARTZ_BLOCK);

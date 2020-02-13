@@ -11,6 +11,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Objects;
+
 import static com.drazisil.luckyworld.LuckyWorld.worldHandler;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
@@ -32,9 +34,9 @@ public class LuckyEventNewWorld extends LuckyEvent {
 
         // Get new world spawn
         World newWorld = getWorld("new_world");
-        assert newWorld != null;
+
         Location newSpawn;
-        newSpawn = cleanLocation(newWorld.getSpawnLocation());
+        newSpawn = cleanLocation(Objects.requireNonNull(newWorld).getSpawnLocation());
 
         Location playerSafeSpawn = newSpawn.clone();
         playerSafeSpawn.setY(playerSafeSpawn.getY() + 1);
@@ -44,7 +46,11 @@ public class LuckyEventNewWorld extends LuckyEvent {
         if (worldHandler.getSpawnLocation() == null) {
             worldHandler.setNewSpawnLocation(playerSafeSpawn);
 
-            worldHandler.generateSpawnPlatform();
+            try {
+                worldHandler.generateSpawnPlatform();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // Set and move player to spawn

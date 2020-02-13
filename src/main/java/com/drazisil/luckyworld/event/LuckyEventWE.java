@@ -3,18 +3,7 @@ package com.drazisil.luckyworld.event;
 import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.ClipboardHolder;
+import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -26,15 +15,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER;
-import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.PARTS;
+import static com.drazisil.luckyworld.shared.LWUtilities.loadAndPlaceSchematic;
 
 @SuppressWarnings("unused")
 public class LuckyEventWE extends LuckyEvent {
@@ -54,60 +42,55 @@ public class LuckyEventWE extends LuckyEvent {
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
         this.isRunning = true;
         this.priorLocation = location.clone();
-        Clipboard clipboard = null;
 
-        File file = new File( LuckyWorld.getInstance().getDataFolder()+ "/../WorldEdit/schematics/" + "FloatingCastle.schem");
-
-        ClipboardFormat format = ClipboardFormats.findByFile(file);
-        assert format != null;
-        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-            clipboard = reader.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /* use the clipboard here */
         Location newLocation = player.getLocation().clone();
         newLocation.setY(225);
 
         Location signLocation = newLocation.clone();
         signLocation.add(2.0d, -1.0d, 5.0d);
 
-        newLocation.setYaw(0.0f);
+        newLocation.setY(newLocation.getY() -1);
+
         player.teleport(newLocation);
-        newLocation.setY(newLocation.getY()-1);
-        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
-            assert clipboard != null;
-            Operation operation = new ClipboardHolder(clipboard)
-                    .createPaste(editSession)
-                    .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
-                    // configure here
-                    .build();
-            Operations.complete(operation);
-        } catch (WorldEditException e) {
-            e.printStackTrace();
-        }
+
+
+
+        loadAndPlaceSchematic(world, newLocation, "FloatingCastle");
+
+
         LuckyEventEntry signEvent = LWEventHandler.getEventByRarityAndName(PARTS, "sign");
-        assert signEvent != null;
-        signEvent.event.doAction(null, world, signLocation, player);
+
+        Objects.requireNonNull(signEvent).event.doAction(null, world, signLocation, player);
 
         // Blocks to change
         BlockSaveRecord gateTriggerBox
                 = new BlockSaveRecord();
-        gateTriggerBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -13),
-                3, 11, 9, CENTER,  0);
+        try {
+            gateTriggerBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -13),
+                    3, 11, 9, CENTER,  new VecOffset(0,0,0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Blocks to track
         BlockSaveRecord castleBoundsBox
                 = new BlockSaveRecord();
-        castleBoundsBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -19),
-                27, 54, 54, CENTER_OFFSET_Y,  11);
+        try {
+            castleBoundsBox.generateBlockSaveCube(newLocation.clone().add(0.0, 0.0, -19),
+                    27, 54, 54, CENTER_OFFSET,  new VecOffset(0.0, 11, 0.0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Blocks to change
         BlockSaveRecord gateBox
                 = new BlockSaveRecord();
-        gateBox.generateBlockSaveCube(newLocation.clone().add(0.0, 7.0, -19),
-                15, 7, 3, CENTER,  0);
+        try {
+            gateBox.generateBlockSaveCube(newLocation.clone().add(0.0, 7.0, -19),
+                    15, 7, 3, CENTER,  new VecOffset(0,0,0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         this.currentGateY = gateBox.getTopSideY();
 
@@ -166,11 +149,11 @@ public class LuckyEventWE extends LuckyEvent {
         if (this.currentGateY < blockSaveRecord.getBottomSideY() && !hasSpawned) {
 
             LuckyEventEntry hugeEvent = LWEventHandler.getEventByRarityAndName(PARTS, "huge");
-            assert hugeEvent != null;
+
             double playerY = player.getLocation().getY();
             Location gateLocation = blockSaveRecord.getStartLocation().clone();
 //            gateLocation.setY(playerY);
-            hugeEvent.event.doAction(null, world, gateLocation.clone().add(-0.0, 0.0, -16.0), player);
+            Objects.requireNonNull(hugeEvent).event.doAction(null, world, gateLocation.clone().add(-0.0, 0.0, -16.0), player);
 
             spawnZombiePod(world, gateLocation.clone().add(-16, 0.0, -5.0));
 
@@ -191,9 +174,9 @@ public class LuckyEventWE extends LuckyEvent {
             Zombie zombie = world.spawn(location, Zombie.class);
             zombie.setBaby(new Random().nextBoolean());
             EntityEquipment zombieEquipment = zombie.getEquipment();
-            assert zombieEquipment != null;
 
-            zombieEquipment.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+
+            Objects.requireNonNull(zombieEquipment).setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
             zombieEquipment.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
             zombieEquipment.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
 

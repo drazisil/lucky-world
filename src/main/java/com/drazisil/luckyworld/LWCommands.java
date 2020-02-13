@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.LuckyWorld.logger;
 import static com.drazisil.luckyworld.event.LWEventHandler.LuckyEventRarity.*;
@@ -34,9 +35,9 @@ class LWCommands implements CommandExecutor {
         String commandName = args[0];
 
         Player player = ((Player) sender).getPlayer();
-        assert player != null;
 
-        Location location = player.getLocation();
+
+        Location location = Objects.requireNonNull(player).getLocation();
         World world = player.getWorld();
         String rarity;
 
@@ -80,7 +81,7 @@ class LWCommands implements CommandExecutor {
                 rarity = args[1];
                 String eventName = args[2].toLowerCase();
 
-                LuckyEventEntry eventEntry = null;
+                LuckyEventEntry eventEntry;
 
                 switch (rarity.toLowerCase()) {
                     case "common":

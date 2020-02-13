@@ -3,6 +3,7 @@ package com.drazisil.luckyworld.event;
 import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
+import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
-import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET_Y;
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
 import static com.drazisil.luckyworld.event.LWEventHandler.getRandomMaterial;
 import static com.drazisil.luckyworld.shared.LWUtilities.clearBlockInventory;
 
@@ -65,12 +66,20 @@ public class LuckyEventDisco extends LuckyEvent {
         startLocation1.setZ(startLocation1.getZ() - 3);
 
         BlockSaveRecord savedBlocks = new BlockSaveRecord();
-        savedBlocks.generateBlockSaveCube(location.clone(),
-                7, 7, 7, CENTER_OFFSET_Y, 1);
+        try {
+            savedBlocks.generateBlockSaveCube(location.clone(),
+                    7, 7, 7, CENTER_OFFSET, new VecOffset(0, 1, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         BlockSaveRecord blocksToChange = new BlockSaveRecord();
-        blocksToChange.generateBlockSaveCube(location.clone(),
-                7, 7, 7, CENTER_OFFSET_Y,  1);
+        try {
+            blocksToChange.generateBlockSaveCube(location.clone(),
+                    7, 7, 7, CENTER_OFFSET,new VecOffset(0, 1, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for (BlockSave blockSave: blocksToChange.getBlocks()) {
             clearBlockInventory(blockSave.getBlock());

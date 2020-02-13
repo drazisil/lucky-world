@@ -126,8 +126,8 @@ public class LWEventHandler {
 
         ArrayList<LuckyEventEntry> eventEntries = getEventsByRarity(rarity);
 
-        assert eventEntries != null;
-        for (LuckyEventEntry eventEntry : eventEntries) {
+
+        for (LuckyEventEntry eventEntry : Objects.requireNonNull(eventEntries)) {
             eventNames.add(eventEntry.name);
         }
 
@@ -138,8 +138,8 @@ public class LWEventHandler {
 
         ArrayList<LuckyEventEntry> eventEntries = getEventsByRarity(rarity);
 
-        assert eventEntries != null;
-        for (LuckyEventEntry eventEntry : eventEntries) {
+
+        for (LuckyEventEntry eventEntry : Objects.requireNonNull(eventEntries)) {
             if (Objects.equals(eventEntry.name, name)) {
                 return eventEntry;
             }
