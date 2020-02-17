@@ -14,5 +14,4 @@ commands:
         /<command> listEvents <rarity - List all events by rarity
         /<command> triggerEvent <rarity <event name> - Trigger a LuckyEvent by rarity and name
         /<command> luckyForce - Trigger the LuckyEvent set as rarity ALWAYS (used for testing, may not do anything
-loadbefore:
-  - WorldEdit
+loadbefore: [WorldEdit]

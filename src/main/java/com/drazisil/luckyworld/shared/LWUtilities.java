@@ -138,6 +138,7 @@ public class LWUtilities {
                     .to(BlockVector3.at(newLocation.getX(), newLocation.getY(), newLocation.getZ()))
 
                     // configure here
+                    .copyEntities(true)
                     .build();
             Operations.complete(operation);
         } catch (WorldEditException e) {

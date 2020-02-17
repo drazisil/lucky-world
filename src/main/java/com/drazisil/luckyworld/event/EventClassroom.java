@@ -3,6 +3,7 @@ package com.drazisil.luckyworld.event;
 import com.drazisil.luckyworld.LuckyWorld;
 import com.drazisil.luckyworld.shared.LWUtilities;
 import com.drazisil.luckyworld.shared.RoundLocation;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -25,6 +26,8 @@ public class EventClassroom extends LuckyEvent {
     private boolean isRunning = false;
     private Location priorLocation = null;
     private Player player;
+    private String techerName = "Ms. Ender";
+    private final LuckyWorld plugin = LuckyWorld.getInstance();
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
@@ -50,94 +53,56 @@ public class EventClassroom extends LuckyEvent {
         player.teleport(new Location(world, seatLocation.getX(), seatLocation.getY(), seatLocation.getZ(), 180.0f, 0.0f));
         playerSeat.addPassenger(player);
 
+        populateClassmates(world, deskSeatSpawnLoc);
 
-        // Seat 1
-        RoundLocation seat1Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, -3);
-        Pig seat1 = makeDesk(world, seat1Location);
+        Enderman teacher = createTeacher(world, (RoundLocation) classroomSpawnLoc.clone().add(-1, 0, -8));
 
-        LivingEntity classmate1 = createClassmate(world, seat1Location, Husk.class, "Rusty");
+        String firstMessage = "Well, class. It looks like " + player.getDisplayName() + " hasn't finished their test yet. Nobody gets to go outside until they do!";
 
-        seat1.addPassenger(classmate1);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> runTeacher(player), (20 * 5));
 
-        // Seat 2
-        RoundLocation seat2Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, -3);
-        Pig seat2 = makeDesk(world, seat2Location);
+    }
 
-        LivingEntity classmate2 = createClassmate(world, seat2Location, Zombie.class, "Harold");
+    private void runTeacher(Player player) {
+        String firstMessage = "Well, class. It looks like " + player.getDisplayName() + " hasn't finished their test yet. Nobody gets to go outside until they do!";
 
-        seat2.addPassenger(classmate2);
+        teacherSpeak(player, firstMessage);
 
-        // Seat 3
-        RoundLocation seat3Location = (RoundLocation) deskSeatSpawnLoc.clone().add(0, 0, -3);
-        Pig seat3 = makeDesk(world, seat3Location);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                plugin, () -> askQuestion(player), (20 * 3));
+    }
 
-        LivingEntity classmate3 = createClassmate(world, seat3Location, Drowned.class, "Triton");
+    public String getCorrectAnswer() {
+        return "c";
+    }
 
-        seat3.addPassenger(classmate3);
+    private void askQuestion(Player player) {
+        String question = "Which material can't be used to make a hoe?\n" +
+                "\n" +
+                "Is it:\n" +
+                "A: Iron\n" +
+                "B: Diamond\n" +
+                "C: Emerald\n" +
+                "\n" +
+                "Please type the correct letter in chat.";
 
-        // Seat 4
-        RoundLocation seat4Location = (RoundLocation) deskSeatSpawnLoc.clone().add(+3, 0, -3);
-        Pig seat4 = makeDesk(world, seat4Location);
+        teacherSpeak(player, question);
+    }
 
-        LivingEntity classmate4 = createClassmate(world, seat4Location, Creeper.class, "Boomie");
-
-        seat4.addPassenger(classmate4);
-
-        // Seat 5
-        RoundLocation seat5Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, 0);
-        Pig seat5 = makeDesk(world, seat5Location);
-
-        LivingEntity classmate5 = createClassmate(world, seat5Location, ZombieVillager.class, "Jhonny");
-
-        seat5.addPassenger(classmate5);
-
-        // Seat 6
-        RoundLocation seat6Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, 0);
-        Pig seat6 = makeDesk(world, seat6Location);
-
-        LivingEntity classmate6 = createClassmate(world, seat6Location, PigZombie.class, "Hammy");
-
-        seat6.addPassenger(classmate6);
-
-        // Seat 7 is the player
-
-        // Seat 8
-        RoundLocation seat8Location = (RoundLocation) deskSeatSpawnLoc.clone().add(3, 0, 0);
-        Pig seat8 = makeDesk(world, seat8Location);
-
-        LivingEntity classmate8 = createClassmate(world, seat8Location, Skeleton.class, "Bones");
-
-        seat8.addPassenger(classmate8);
-
-
-//        RoundLocation leftDeskSeatLoc = (RoundLocation) deskSeatSpawnLoc.clone().add(-1.0, 1.0, -0.0);
-//        Block trapdoorLeftSeatBlock = world.getBlockAt(leftDeskSeatLoc);
-//        trapdoorLeftSeatBlock.setType(Material.ACACIA_TRAPDOOR);
-//        TrapDoor trapdoorLeftSeatData = (TrapDoor) trapdoorLeftSeatBlock.getBlockData();
-//        trapdoorLeftSeatData.setFacing(BlockFace.EAST);
-//        trapdoorLeftSeatData.setOpen(true);
-//        trapdoorLeftSeatBlock.setBlockData(trapdoorLeftSeatData);
-//
-//        RoundLocation rightDeskSeatLoc = (RoundLocation) deskSeatSpawnLoc.clone().add(1.0, 1.0, -0.0);
-//        Block trapdoorRightSeatBlock = world.getBlockAt(rightDeskSeatLoc);
-//        trapdoorLeftSeatBlock.setType(Material.ACACIA_TRAPDOOR);
-//        TrapDoor trapdoorRightSeatData = (TrapDoor) trapdoorLeftSeatBlock.getBlockData();
-//        trapdoorRightSeatData.setFacing(BlockFace.EAST);
-//        trapdoorRightSeatData.setOpen(true);
-//        trapdoorRightSeatBlock.setBlockData(trapdoorRightSeatData);
-
-
+    public void teacherSpeak(Player player, String message) {
+        player.sendMessage("<" + getTeacherName() + "> " + message);
     }
 
     private Pig makeDesk(World world, RoundLocation location) {
         Pig playerSeat = makeDeskChair(world, location);
 
         RoundLocation deskSpawnLoc = (RoundLocation) cleanLocation(location.clone()).add(0, 1, -1);
-        makeDeskDesk(world, deskSpawnLoc);
+        makeStudentDesk(world, deskSpawnLoc);
         return  playerSeat;
     }
 
-    private void makeDeskDesk(World world, RoundLocation location) {
+    private void makeStudentDesk(World world, RoundLocation location) {
         Block trapdoorDeskBlock = world.getBlockAt(location.clone());
         trapdoorDeskBlock.setType(Material.BIRCH_TRAPDOOR);
         TrapDoor trapdoorDeskData = (TrapDoor) trapdoorDeskBlock.getBlockData();
@@ -160,6 +125,9 @@ public class EventClassroom extends LuckyEvent {
         trapdoorDeskRight.setBlockData(trapdoorDeskRightData);
 
     }
+
+
+
 
     private Pig makeDeskChair(World world, RoundLocation deskSeatSpawnLoc) {
 
@@ -201,8 +169,121 @@ public class EventClassroom extends LuckyEvent {
             ((Zombie) classmate).setBaby(true);
         }
 
+        if (classmate instanceof Ageable) {
+            ((Ageable) classmate).setBaby();
+        }
+
         classmate.setInvulnerable(true);
         return classmate;
+    }
+
+    private Enderman createTeacher(World world, RoundLocation location) {
+        Enderman teacher = world.spawn(location, Enderman.class);
+        teacher.setMetadata("classroom_name", new FixedMetadataValue(LuckyWorld.getInstance(), "teacher"));
+        teacher.setCustomName(getTeacherName());
+
+        teacher.setInvulnerable(true);
+        return teacher;
+    }
+
+    private String getTeacherName() {
+        return this.techerName;
+    }
+
+    private void populateClassmates(World world, RoundLocation startingLocation) {
+
+        RoundLocation deskSeatSpawnLoc = startingLocation.clone();
+
+        // Seat 1
+        RoundLocation seat1Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, -3);
+        Pig seat1 = makeDesk(world, seat1Location);
+
+        LivingEntity classmate1 = createClassmate(world, seat1Location, Husk.class, "Rusty");
+
+        seat1.addPassenger(classmate1);
+
+        // Seat 2
+        RoundLocation seat2Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, -3);
+        Pig seat2 = makeDesk(world, seat2Location);
+
+        LivingEntity classmate2 = createClassmate(world, seat2Location, Zombie.class, "Harold");
+
+        seat2.addPassenger(classmate2);
+
+        // Seat 3
+        RoundLocation seat3Location = (RoundLocation) deskSeatSpawnLoc.clone().add(0, 0, -3);
+        Pig seat3 = makeDesk(world, seat3Location);
+
+        LivingEntity classmate3 = createClassmate(world, seat3Location, Drowned.class, "Triton");
+
+        seat3.addPassenger(classmate3);
+
+        // Seat 4
+        RoundLocation seat4Location = (RoundLocation) deskSeatSpawnLoc.clone().add(+3, 0, -3);
+        Pig seat4 = makeDesk(world, seat4Location);
+
+        LivingEntity classmate4 = createClassmate(world, seat4Location, Sheep.class, "Dinner");
+
+        seat4.addPassenger(classmate4);
+
+        // Seat 5
+        RoundLocation seat5Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, 0);
+        Pig seat5 = makeDesk(world, seat5Location);
+
+        LivingEntity classmate5 = createClassmate(world, seat5Location, ZombieVillager.class, "Jhonny");
+
+        seat5.addPassenger(classmate5);
+
+        // Seat 6
+        RoundLocation seat6Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, 0);
+        Pig seat6 = makeDesk(world, seat6Location);
+
+        LivingEntity classmate6 = createClassmate(world, seat6Location, Panda.class, "Munchy");
+
+        seat6.addPassenger(classmate6);
+
+        // Seat 7 is the player
+
+        // Seat 8
+        RoundLocation seat8Location = (RoundLocation) deskSeatSpawnLoc.clone().add(3, 0, 0);
+        Pig seat8 = makeDesk(world, seat8Location);
+
+        LivingEntity classmate8 = createClassmate(world, seat8Location, Fox.class, "Fire");
+
+        seat8.addPassenger(classmate8);
+
+        // Seat 9
+        RoundLocation seat9Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, 3);
+        Pig seat9 = makeDesk(world, seat9Location);
+
+        LivingEntity classmate9 = createClassmate(world, seat9Location, Villager.class, "Gerry");
+
+        seat9.addPassenger(classmate9);
+
+        // Seat 10
+        RoundLocation seat10Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, 3);
+        Pig seat10 = makeDesk(world, seat10Location);
+
+        LivingEntity classmate10 = createClassmate(world, seat10Location, PigZombie.class, "Hammy");
+
+        seat10.addPassenger(classmate10);
+
+        // Seat 11
+        RoundLocation seat11Location = (RoundLocation) deskSeatSpawnLoc.clone().add(0, 0, 3);
+        Pig seat11 = makeDesk(world, seat11Location);
+
+        LivingEntity classmate11 = createClassmate(world, seat11Location, Creeper.class, "Boomie");
+
+        seat11.addPassenger(classmate11);
+
+        // Seat 12
+        RoundLocation seat12Location = (RoundLocation) deskSeatSpawnLoc.clone().add(3, 0, 3);
+        Pig seat12 = makeDesk(world, seat12Location);
+
+        LivingEntity classmate12 = createClassmate(world, seat12Location, Pig.class, "Oggie");
+
+        seat12.addPassenger(classmate12);
+
     }
 
 

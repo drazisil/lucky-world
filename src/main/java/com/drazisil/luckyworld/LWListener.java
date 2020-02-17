@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
@@ -97,12 +98,41 @@ class LWListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerSay(PlayerChatEvent event) {
+        LuckyEventEntry rawLuckyEvent;
+
         if (event.getMessage().equals("Mischief Managed")) {
             event.getPlayer().sendMessage("Ok");
-            LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+            rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
 
             EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
             luckyEvent.reset();
+        }
+
+
+        rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+
+        EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
+        if (luckyEvent.isRunning()) {
+
+            if (event.getMessage().equals("Mischief Managed")) {
+                event.getPlayer().sendMessage("Ok");
+                rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+
+                luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
+                luckyEvent.reset();
+            }
+
+        }
+
+
+        if (event.getMessage().length() == 1) {
+
+            if (event.getMessage().equalsIgnoreCase(luckyEvent.getCorrectAnswer())) {
+                luckyEvent.teacherSpeak(event.getPlayer(), "Correct!");
+                luckyEvent.reset();
+            } else {
+                luckyEvent.teacherSpeak(event.getPlayer(), "Looks you could really use that fresh air. Wrong, try again.");
+            }
         }
     }
 
@@ -133,6 +163,16 @@ class LWListener implements Listener {
         Entity entity = event.getEntity();
         if (entity.hasMetadata("classroom_name")) {
             if (entity.getMetadata("classroom_name").get(0).asString().equals("classmate")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityTeleport(EntityTeleportEvent event) {
+        Entity entity = event.getEntity();
+        if (entity.hasMetadata("classroom_name")) {
+            if (entity.getMetadata("classroom_name").get(0).asString().equals("teacher")) {
                 event.setCancelled(true);
             }
         }
