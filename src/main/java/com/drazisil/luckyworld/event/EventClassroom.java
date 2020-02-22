@@ -1,12 +1,11 @@
 package com.drazisil.luckyworld.event;
 
+import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
 import com.drazisil.luckyworld.shared.LWUtilities;
 import com.drazisil.luckyworld.shared.RoundLocation;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import com.drazisil.luckyworld.shared.VecOffset;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -18,6 +17,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
 public class EventClassroom extends LuckyEvent {
@@ -28,36 +28,69 @@ public class EventClassroom extends LuckyEvent {
     private Player player;
     private String techerName = "Ms. Ender";
     private final LuckyWorld plugin = LuckyWorld.getInstance();
+    private World priorWorld;
+    private World classroomWorld;
+    private BlockSaveRecord classroomBox;
+    private BlockSaveRecord classroomRestoreBox;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
         this.isRunning = true;
         this.priorLocation = location.clone();
+        this.priorWorld = world;
         this.player = player;
+        this.classroomWorld = this.player.getServer().getWorld("new_world");
 
-        RoundLocation rawLocation = cleanLocation(location);
+            if (this.classroomWorld != null) {
+                this.classroomWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            }
+
+        this.player.setPlayerTime(1200, false);
+        this.player.setPlayerWeather(WeatherType.CLEAR);
+
+        RoundLocation rawLocation = cleanLocation(new Location(this.classroomWorld, 300, 225, 0));
+
+
+//        RoundLocation rawLocation = cleanLocation(location);
 
         RoundLocation classroomSpawnLoc = rawLocation.clone();
 
-        classroomSpawnLoc.setY(225);
+        classroomSpawnLoc.setY(200);
 
-        LWUtilities.loadAndPlaceSchematic(world, classroomSpawnLoc.clone(), "Classroom");
+
+        this.classroomRestoreBox = new BlockSaveRecord();
+        try {
+            classroomRestoreBox.generateBlockSaveCube(classroomSpawnLoc.clone().add(-30, 17, -4),
+                    60, 75, 70, CENTER_OFFSET,  new VecOffset(0,0,0));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        LWUtilities.loadAndPlaceSchematic(classroomWorld, classroomSpawnLoc.clone(), "Classroom");
 
         RoundLocation deskSeatSpawnLoc = (RoundLocation) classroomSpawnLoc.clone().add(0, -1, 0);
 
         // Player Seat
-        Pig playerSeat = makeDesk(world, deskSeatSpawnLoc);
+        Pig playerSeat = makeDesk(classroomWorld, deskSeatSpawnLoc);
 
         RoundLocation seatLocation = classroomSpawnLoc.clone();
-        player.teleport(new Location(world, seatLocation.getX(), seatLocation.getY(), seatLocation.getZ(), 180.0f, 0.0f));
+        player.teleport(new Location(classroomWorld, seatLocation.getX(), seatLocation.getY(), seatLocation.getZ(), 180.0f, 0.0f));
         playerSeat.addPassenger(player);
 
-        populateClassmates(world, deskSeatSpawnLoc);
+        populateClassmates(classroomWorld, deskSeatSpawnLoc);
 
-        Enderman teacher = createTeacher(world, (RoundLocation) classroomSpawnLoc.clone().add(-1, 0, -8));
+        Enderman teacher = createTeacher(classroomWorld, (RoundLocation) classroomSpawnLoc.clone().add(-1, 0, -8));
 
-        String firstMessage = "Well, class. It looks like " + player.getDisplayName() + " hasn't finished their test yet. Nobody gets to go outside until they do!";
+        this.classroomBox = new BlockSaveRecord();
+        try {
+            System.out.println("====================================\n" +classroomSpawnLoc.toString());
+            classroomBox.generateBlockSaveCube(classroomSpawnLoc.clone().add(-30, 17, -4),
+                    60, 75, 70, CENTER_OFFSET,  new VecOffset(0,0,0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(
                 plugin, () -> runTeacher(player), (20 * 5));
@@ -290,7 +323,10 @@ public class EventClassroom extends LuckyEvent {
     public void reset() {
         this.needsCancel = false;
         setRunning(false);
+        this.player.resetPlayerTime();
+        this.player.resetPlayerWeather();
         this.player.teleport(this.priorLocation);
+        this.classroomRestoreBox.restoreAll(this.classroomBox);
     }
 
     public boolean isRunning() {

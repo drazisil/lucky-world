@@ -140,6 +140,7 @@ public class LWUtilities {
                     // configure here
                     .copyEntities(true)
                     .build();
+
             Operations.complete(operation);
         } catch (WorldEditException e) {
             e.printStackTrace();

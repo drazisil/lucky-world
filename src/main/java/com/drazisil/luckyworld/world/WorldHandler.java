@@ -24,13 +24,15 @@ public class WorldHandler {
     private final World newWorld;
 
 
-    public WorldHandler() {
+    public WorldHandler(World sourceWorld) {
         // https://hub.spigotmc.org/javadocs/spigot/org/bukkit/WorldCreator.html
 
         WorldCreator newWorldCreator = new WorldCreator("new_world");
+        newWorldCreator.copy(sourceWorld);
 
-        newWorldCreator.generator(new LWChunkGenerator());
-        newWorldCreator.generateStructures(true);
+//        newWorldCreator.generator(new LWChunkGenerator());
+//        newWorldCreator.generator("the_end");
+//        newWorldCreator.generateStructures(true);
 
         newWorld = createWorld(newWorldCreator);
 
@@ -59,8 +61,6 @@ public class WorldHandler {
         if (locationToString(location).equals(locationToString(spawnLoc))
                 && event.getBlock().getType() == Material.GREEN_STAINED_GLASS) {
             dispatchCommand(player, "execute in overworld run tp 0 64 0");
-            player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
-            player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
             player.setInvulnerable(false);
             event.setCancelled(true);
         }

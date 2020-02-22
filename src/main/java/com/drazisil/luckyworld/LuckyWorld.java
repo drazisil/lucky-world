@@ -37,7 +37,8 @@ public final class LuckyWorld extends JavaPlugin {
 
 
         // Create world
-        worldHandler = new WorldHandler();
+
+        worldHandler = new WorldHandler(this.getServer().getWorld("world_the_end"));
 
         // Copy assets
         ArrayList<String> schematicNames = new ArrayList<>();

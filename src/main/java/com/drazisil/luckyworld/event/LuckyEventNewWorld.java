@@ -8,10 +8,7 @@ import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.Objects;
 
 import static com.drazisil.luckyworld.LuckyWorld.worldHandler;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
@@ -36,7 +33,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         World newWorld = getWorld("new_world");
 
         Location newSpawn;
-        newSpawn = cleanLocation(Objects.requireNonNull(newWorld).getSpawnLocation());
+        newSpawn = cleanLocation(new Location(newWorld, 300, 225, 0));
 
         Location playerSafeSpawn = newSpawn.clone();
         playerSafeSpawn.setY(playerSafeSpawn.getY() + 1);
@@ -55,9 +52,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
 
         // Set and move player to spawn
         player.setGameMode(GameMode.SURVIVAL);
-        PotionEffect superJump = new PotionEffect(PotionEffectType.CONDUIT_POWER, getDurationBySeconds(numSeconds), 80);
         player.setInvulnerable(true);
-        player.addPotionEffect(superJump);
 
         player.teleport(playerSafeSpawn);
 
