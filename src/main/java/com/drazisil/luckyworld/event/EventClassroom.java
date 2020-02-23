@@ -29,13 +29,10 @@ public class EventClassroom extends LuckyEvent {
 
     public boolean needsCancel = false;
     private boolean isRunning = false;
-    @SuppressWarnings("FieldCanBeLocal")
     private Location priorLocation = null;
     private Player player;
     private final LuckyWorld plugin = LuckyWorld.getInstance();
-    @SuppressWarnings("FieldCanBeLocal")
     private BlockSaveRecord classroomBox;
-    @SuppressWarnings("FieldCanBeLocal")
     private BlockSaveRecord classroomRestoreBox;
     private BlockSaveRecord floorBox;
     private final ClassmateRecordHandler classmateHandler = new ClassmateRecordHandler();

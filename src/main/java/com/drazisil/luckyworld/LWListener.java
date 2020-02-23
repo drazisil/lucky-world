@@ -1,6 +1,7 @@
 package com.drazisil.luckyworld;
 
 
+import com.drazisil.luckyworld.ai.AIManager;
 import com.drazisil.luckyworld.event.EventClassroom;
 import com.drazisil.luckyworld.event.LWEventHandler;
 import com.drazisil.luckyworld.event.LuckyEventEntry;
@@ -18,13 +19,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.Objects;
 
-import static com.drazisil.luckyworld.LuckyWorld.*;
+import static com.drazisil.luckyworld.LuckyWorld.getMagicNumber;
+import static com.drazisil.luckyworld.LuckyWorld.getMaxNumber;
 import static com.drazisil.luckyworld.event.LWEventHandler.handleLuckyEvent;
 import static com.drazisil.luckyworld.event.LWEventHandler.shouldEvent;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
@@ -214,6 +217,40 @@ class LWListener implements Listener {
             }
         }
 
+    }
+
+    @EventHandler
+    public void onLivingEntitySpawn(EntitySpawnEvent spawnEvent) {
+        if (!(spawnEvent.getEntity() instanceof LivingEntity)) return;
+
+        LivingEntity spawnEntity = (LivingEntity) spawnEvent.getEntity();
+        Location spawnLocation = spawnEvent.getLocation();
+
+        System.out.println("A living entity of type " + spawnEntity.getType() + " has spanwed at " + spawnLocation);
+
+        AIManager.addEntity(spawnEntity);
+    }
+
+    @EventHandler
+    public void onLivingEntityDeath(EntityDeathEvent deathEvent) {
+
+        AIManager.removeEntity(deathEvent.getEntity());
+    }
+
+    @EventHandler
+    public void onLivingEntityInteractEvent(PlayerInteractEntityEvent interactEntityEvent) {
+
+        if (!(interactEntityEvent.getRightClicked() instanceof LivingEntity)) return;
+
+        AIManager.LivingAIEntity livingAIEntity;
+
+        livingAIEntity = AIManager.getAIEntity((LivingEntity) interactEntityEvent.getRightClicked());
+
+        if (livingAIEntity != null) {
+            System.out.println("Entity located in AIManager");
+        } else {
+            System.out.println("Unable to locate entity in AIManager");
+        }
     }
 }
 
