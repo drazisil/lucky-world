@@ -2,20 +2,17 @@ package com.drazisil.luckyworld.world;
 
 import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
+import com.drazisil.luckyworld.LuckyWorld;
 import com.drazisil.luckyworld.shared.VecOffset;
 import org.bukkit.*;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Objects;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
-import static com.drazisil.luckyworld.shared.LWUtilities.locationToString;
 import static org.bukkit.Bukkit.createWorld;
-import static org.bukkit.Bukkit.dispatchCommand;
 
 public class WorldHandler {
 
@@ -27,7 +24,7 @@ public class WorldHandler {
     public WorldHandler(World sourceWorld) {
         // https://hub.spigotmc.org/javadocs/spigot/org/bukkit/WorldCreator.html
 
-        WorldCreator newWorldCreator = new WorldCreator("new_world");
+        WorldCreator newWorldCreator = new WorldCreator(LuckyWorld.worldName);
         newWorldCreator.copy(sourceWorld);
 
 //        newWorldCreator.generator(new LWChunkGenerator());
@@ -50,21 +47,21 @@ public class WorldHandler {
         this.newSpawnLocation = newSpawnLocation;
     }
 
-    public void handleBlockBreakEvent(BlockBreakEvent event,
-                                      Location location,
-                                      Player player) {
-
-        // Fetch spawn location
-        Location spawnLoc = getSpawnLocation().clone();
-        spawnLoc.setY(spawnLoc.getY() - 1);
-
-        if (locationToString(location).equals(locationToString(spawnLoc))
-                && event.getBlock().getType() == Material.GREEN_STAINED_GLASS) {
-            dispatchCommand(player, "execute in overworld run tp 0 64 0");
-            player.setInvulnerable(false);
-            event.setCancelled(true);
-        }
-    }
+//    public void handleBlockBreakEvent(BlockBreakEvent event,
+//                                      Location location,
+//                                      Player player) {
+//
+//        // Fetch spawn location
+//        Location spawnLoc = getSpawnLocation().clone();
+//        spawnLoc.setY(spawnLoc.getY() - 1);
+//
+//        if (locationToString(location).equals(locationToString(spawnLoc))
+//                && event.getBlock().getType() == Material.GREEN_STAINED_GLASS) {
+//            dispatchCommand(player, "execute in overworld run tp 0 64 0");
+//            player.setInvulnerable(false);
+//            event.setCancelled(true);
+//        }
+//    }
 
     public void generateSpawnPlatform() {
 

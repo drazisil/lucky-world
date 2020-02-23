@@ -30,7 +30,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         int numSeconds = 60 * 5;
 
         // Get new world spawn
-        World newWorld = getWorld("new_world");
+        World newWorld = getWorld(LuckyWorld.worldName);
 
         Location newSpawn;
         newSpawn = cleanLocation(new Location(newWorld, 300, 225, 0));
@@ -38,7 +38,7 @@ public class LuckyEventNewWorld extends LuckyEvent {
         Location playerSafeSpawn = newSpawn.clone();
         playerSafeSpawn.setY(playerSafeSpawn.getY() + 1);
 
-        dispatchCommand(consoleSender, "execute in new_world run tp " + playerName +  " " + locationToString(playerSafeSpawn));
+        dispatchCommand(consoleSender, "execute in " + LuckyWorld.worldName + " run tp " + playerName +  " " + locationToString(playerSafeSpawn));
 
         if (worldHandler.getSpawnLocation() == null) {
             worldHandler.setNewSpawnLocation(playerSafeSpawn);

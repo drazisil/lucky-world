@@ -1,5 +1,6 @@
 package com.drazisil.luckyworld.event;
 
+import com.drazisil.luckyworld.BlockSave;
 import com.drazisil.luckyworld.BlockSaveRecord;
 import com.drazisil.luckyworld.LuckyWorld;
 import com.drazisil.luckyworld.shared.LWUtilities;
@@ -16,6 +17,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.drazisil.luckyworld.BlockSaveRecord.CenterType.CENTER_OFFSET;
 import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
@@ -24,32 +29,37 @@ public class EventClassroom extends LuckyEvent {
 
     public boolean needsCancel = false;
     private boolean isRunning = false;
+    @SuppressWarnings("FieldCanBeLocal")
     private Location priorLocation = null;
     private Player player;
-    private String techerName = "Ms. Ender";
     private final LuckyWorld plugin = LuckyWorld.getInstance();
-    private World priorWorld;
-    private World classroomWorld;
+    @SuppressWarnings("FieldCanBeLocal")
     private BlockSaveRecord classroomBox;
+    @SuppressWarnings("FieldCanBeLocal")
     private BlockSaveRecord classroomRestoreBox;
+    private BlockSaveRecord floorBox;
+    private final ClassmateRecordHandler classmateHandler = new ClassmateRecordHandler();
+    private int currentClassmateId = 1;
+
+    private BukkitTask classmateDropTask;
 
     @Override
     public void doAction(BlockBreakEvent event, World world, Location location, Player player) {
 
         this.isRunning = true;
         this.priorLocation = location.clone();
-        this.priorWorld = world;
         this.player = player;
-        this.classroomWorld = this.player.getServer().getWorld("new_world");
+        World classroomWorld = this.player.getServer().getWorld(LuckyWorld.worldName);
 
-            if (this.classroomWorld != null) {
-                this.classroomWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            if (classroomWorld != null) {
+                classroomWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                classroomWorld.setGameRule(GameRule.DO_FIRE_TICK, false);
             }
 
         this.player.setPlayerTime(1200, false);
         this.player.setPlayerWeather(WeatherType.CLEAR);
 
-        RoundLocation rawLocation = cleanLocation(new Location(this.classroomWorld, 300, 225, 0));
+        RoundLocation rawLocation = cleanLocation(new Location(classroomWorld, 300, 225, 0));
 
 
 //        RoundLocation rawLocation = cleanLocation(location);
@@ -70,6 +80,15 @@ public class EventClassroom extends LuckyEvent {
 
         LWUtilities.loadAndPlaceSchematic(classroomWorld, classroomSpawnLoc.clone(), "Classroom");
 
+
+        this.floorBox = new BlockSaveRecord();
+        try {
+            floorBox.generateBlockSaveCube(classroomSpawnLoc.clone().add(-1, 0, 0),
+                    5, 13, 9, CENTER_OFFSET,  new VecOffset(0,0,0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         RoundLocation deskSeatSpawnLoc = (RoundLocation) classroomSpawnLoc.clone().add(0, -1, 0);
 
         // Player Seat
@@ -81,11 +100,10 @@ public class EventClassroom extends LuckyEvent {
 
         populateClassmates(classroomWorld, deskSeatSpawnLoc);
 
-        Enderman teacher = createTeacher(classroomWorld, (RoundLocation) classroomSpawnLoc.clone().add(-1, 0, -8));
+        createTeacher(Objects.requireNonNull(classroomWorld), (RoundLocation) classroomSpawnLoc.clone().add(-1, 0, -8));
 
         this.classroomBox = new BlockSaveRecord();
         try {
-            System.out.println("====================================\n" +classroomSpawnLoc.toString());
             classroomBox.generateBlockSaveCube(classroomSpawnLoc.clone().add(-30, 17, -4),
                     60, 75, 70, CENTER_OFFSET,  new VecOffset(0,0,0));
         } catch (Exception e) {
@@ -106,6 +124,7 @@ public class EventClassroom extends LuckyEvent {
                 plugin, () -> askQuestion(player), (20 * 3));
     }
 
+    @SuppressWarnings("SameReturnValue")
     public String getCorrectAnswer() {
         return "c";
     }
@@ -160,8 +179,6 @@ public class EventClassroom extends LuckyEvent {
     }
 
 
-
-
     private Pig makeDeskChair(World world, RoundLocation deskSeatSpawnLoc) {
 
         world.getBlockAt(deskSeatSpawnLoc).setType(Material.ACACIA_SLAB);
@@ -194,6 +211,14 @@ public class EventClassroom extends LuckyEvent {
         return pigSeat;
     }
 
+    private void deleteDeskChair(World world, RoundLocation deskSeatSpawnLoc) {
+        Block slabSeatBotom = world.getBlockAt(deskSeatSpawnLoc.clone().add(0.0, 1.0, 0.0));
+        slabSeatBotom.setType(Material.AIR);
+
+        Block trapdoorBackSeatBlock = world.getBlockAt(deskSeatSpawnLoc.clone().add(0.0, 1.0, 1.0));
+        trapdoorBackSeatBlock.setType(Material.AIR);
+    }
+
     private <T extends LivingEntity> LivingEntity createClassmate(World world, RoundLocation location, Class<T> clazz, String name) {
         LivingEntity classmate = world.spawn(location, clazz);
         classmate.setMetadata("classroom_name", new FixedMetadataValue(LuckyWorld.getInstance(), "classmate"));
@@ -210,17 +235,17 @@ public class EventClassroom extends LuckyEvent {
         return classmate;
     }
 
-    private Enderman createTeacher(World world, RoundLocation location) {
+    private void createTeacher(World world, RoundLocation location) {
         Enderman teacher = world.spawn(location, Enderman.class);
         teacher.setMetadata("classroom_name", new FixedMetadataValue(LuckyWorld.getInstance(), "teacher"));
         teacher.setCustomName(getTeacherName());
 
         teacher.setInvulnerable(true);
-        return teacher;
     }
 
+    @SuppressWarnings("SameReturnValue")
     private String getTeacherName() {
-        return this.techerName;
+        return "Ms. Ender";
     }
 
     private void populateClassmates(World world, RoundLocation startingLocation) {
@@ -234,6 +259,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate1 = createClassmate(world, seat1Location, Husk.class, "Rusty");
 
         seat1.addPassenger(classmate1);
+        classmateHandler.add(new ClassmateRecord(1, seat1, seat1Location, classmate1));
 
         // Seat 2
         RoundLocation seat2Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, -3);
@@ -242,6 +268,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate2 = createClassmate(world, seat2Location, Zombie.class, "Harold");
 
         seat2.addPassenger(classmate2);
+        classmateHandler.add(new ClassmateRecord(2, seat2, seat2Location, classmate2));
 
         // Seat 3
         RoundLocation seat3Location = (RoundLocation) deskSeatSpawnLoc.clone().add(0, 0, -3);
@@ -250,6 +277,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate3 = createClassmate(world, seat3Location, Drowned.class, "Triton");
 
         seat3.addPassenger(classmate3);
+        classmateHandler.add(new ClassmateRecord(3, seat3, seat3Location, classmate3));
 
         // Seat 4
         RoundLocation seat4Location = (RoundLocation) deskSeatSpawnLoc.clone().add(+3, 0, -3);
@@ -258,6 +286,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate4 = createClassmate(world, seat4Location, Sheep.class, "Dinner");
 
         seat4.addPassenger(classmate4);
+        classmateHandler.add(new ClassmateRecord(4, seat4, seat4Location, classmate4));
 
         // Seat 5
         RoundLocation seat5Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-6, 0, 0);
@@ -266,6 +295,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate5 = createClassmate(world, seat5Location, ZombieVillager.class, "Jhonny");
 
         seat5.addPassenger(classmate5);
+        classmateHandler.add(new ClassmateRecord(5, seat5, seat5Location, classmate5));
 
         // Seat 6
         RoundLocation seat6Location = (RoundLocation) deskSeatSpawnLoc.clone().add(-3, 0, 0);
@@ -274,6 +304,7 @@ public class EventClassroom extends LuckyEvent {
         LivingEntity classmate6 = createClassmate(world, seat6Location, Panda.class, "Munchy");
 
         seat6.addPassenger(classmate6);
+        classmateHandler.add(new ClassmateRecord(6, seat6, seat6Location, classmate6));
 
         // Seat 7 is the player
 
@@ -319,15 +350,67 @@ public class EventClassroom extends LuckyEvent {
 
     }
 
-
     public void reset() {
         this.needsCancel = false;
+
+        teacherSpeak(this.player, "Class dismissed!");
+
+        player.getWorld().playSound( player.getLocation(), Sound.ENTITY_WITCH_CELEBRATE, 1.0f, 1.0f);
+
+        for (BlockSave block: floorBox.getBlocks()) {
+            Block currentBlock = floorBox.getWorld().getBlockAt(block.getLocation());
+            if (currentBlock.getType() == Material.CYAN_GLAZED_TERRACOTTA
+                    || currentBlock.getType() == Material.STONE
+                    || currentBlock.getType() == Material.ACACIA_TRAPDOOR
+                    || currentBlock.getType() == Material.BIRCH_TRAPDOOR) {
+                floorBox.getWorld().getBlockAt(block.getLocation()).setType(Material.AIR);
+            }
+        }
+
         setRunning(false);
+
+        classmateDropTask = Bukkit.getScheduler().runTaskTimer(plugin,
+                this::dropClassmate, 20, 40);
+
         this.player.resetPlayerTime();
         this.player.resetPlayerWeather();
-        this.player.teleport(this.priorLocation);
-        this.classroomRestoreBox.restoreAll(this.classroomBox);
+//        this.player.teleport(this.priorLocation);
+//        this.classroomRestoreBox.restoreAll(this.classroomBox);
     }
+
+    private void dropClassmate() {
+        if (currentClassmateId == 7) {
+            currentClassmateId = 1;
+            this.classmateDropTask.cancel();
+            this.player.resetPlayerTime();
+            this.player.resetPlayerWeather();
+            this.player.teleport(this.priorLocation);
+            this.classroomRestoreBox.restoreAll(this.classroomBox);
+            return;
+        }
+
+        ClassmateRecord classmate = classmateHandler.getSeatNumber(currentClassmateId);
+
+        World classmateWorld = classmate.slabLocation.getWorld();
+
+        teacherSpeak(player, classmate.classmate.getCustomName() + ", dismissed!");
+
+        if (classmateWorld != null) {
+
+            classmate.classmate.setInvulnerable(false);
+            classmate.seat.setInvulnerable(false);
+            classmateWorld.getBlockAt(classmate.slabLocation).setType(Material.AIR);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(
+                    LuckyWorld.getInstance(), () -> {
+                        classmateWorld.strikeLightningEffect(classmate.classmate.getLocation());
+                        deleteDeskChair(classmateWorld, cleanLocation(classmate.slabLocation));
+                    }, 5);
+        }
+
+        this.currentClassmateId++;
+    }
+
 
     public boolean isRunning() {
         return isRunning;
@@ -335,5 +418,41 @@ public class EventClassroom extends LuckyEvent {
 
     public void setRunning(boolean running) {
         isRunning = running;
+    }
+
+    static class ClassmateRecord {
+
+        public final int id;
+        public final Pig seat;
+        public final Location slabLocation;
+        public final LivingEntity classmate;
+
+        public ClassmateRecord(int id, Pig seat, Location slabLocation, LivingEntity classmate) {
+            this.id = id;
+            this.seat = seat;
+            this.slabLocation = slabLocation;
+            this.classmate = classmate;
+        }
+    }
+
+    static class ClassmateRecordHandler {
+
+        private final ArrayList<ClassmateRecord> classmates = new ArrayList<>();
+
+        public ClassmateRecordHandler() {}
+
+        public void add(ClassmateRecord record) {
+            classmates.add(record);
+        }
+
+        public ClassmateRecord getSeatNumber(int seatNumber) {
+
+            for (ClassmateRecord classmate: this.classmates) {
+                if (classmate.id == seatNumber) {
+                    return classmate;
+                }
+            }
+            return null;
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.drazisil.luckyworld.event.EventClassroom;
 import com.drazisil.luckyworld.event.LWEventHandler;
 import com.drazisil.luckyworld.event.LuckyEventEntry;
 import com.drazisil.luckyworld.event.LuckyEventWE;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -14,12 +15,9 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTeleportEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.projectiles.ProjectileSource;
@@ -34,13 +32,20 @@ import static com.drazisil.luckyworld.shared.LWUtilities.cleanLocation;
 
 class LWListener implements Listener {
 
+    /**
+     * Fires when a player joins
+     * @param event PlayerJoinEvent
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().sendMessage("Welcome, " + event.getPlayer().getName() + " to..." + LuckyWorld.name + "!");
 
     }
 
-
+    /**
+     * Watches for block break events in the overworld and the LuckyWorld world
+     * @param event BlockBreakEvent
+     */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 
@@ -49,16 +54,16 @@ class LWListener implements Listener {
         String worldName = world.getName();
 
         // Fast fail if not a world we care about
-        if (!worldName.equals("overworld") && !worldName.equals("new_world")) {
+        if (!worldName.equals("overworld") && !worldName.equals(LuckyWorld.worldName)) {
             return;
         }
 
         Location location = cleanLocation(event.getBlock().getLocation());
 
-        // Handle new_world events
-        if (worldName.equals("new_world")) {
-            worldHandler.handleBlockBreakEvent(event, location, player);
-        }
+        // Handle LuckyWorld world events events
+//        if (worldName.equals(LuckyWorld.worldName)) {
+//            worldHandler.handleBlockBreakEvent(event, location, player);
+//        }
 
 
         // Handle overworld events
@@ -74,6 +79,23 @@ class LWListener implements Listener {
 
     }
 
+    /**
+     * This event handler cancels spawns in the LuckyWorld world caused by lightning
+     * @param spawnEvent CreatureSpawnEvent
+     */
+    @EventHandler
+    public void onCreatureSpawnEvent(CreatureSpawnEvent spawnEvent) {
+        World spawnWorld = spawnEvent.getLocation().getWorld();
+        if (spawnWorld != null && spawnEvent.getSpawnReason() == CreatureSpawnEvent.SpawnReason.LIGHTNING
+                && spawnWorld.getName().equalsIgnoreCase(LuckyWorld.worldName)) {
+            spawnEvent.setCancelled(true);
+        }
+    }
+
+    /**
+     * Cancels fall damage to a player during the {@link LuckyEventWE} event
+     * @param damageEvent EntityDamageEvent
+     */
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent damageEvent) {
         if (damageEvent.getCause() == EntityDamageEvent.DamageCause.FALL && damageEvent.getEntity() instanceof  Player) {
@@ -87,6 +109,10 @@ class LWListener implements Listener {
         }
     }
 
+    /**
+     * Triggers the {@link EventClassroom} event when a player sleeps
+     * @param event PlayerBedEnterEvent
+     */
     @EventHandler
     public void onPlayerSleep(PlayerBedEnterEvent event) {
         LuckyEventEntry luckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
@@ -95,45 +121,44 @@ class LWListener implements Listener {
         event.setCancelled(true);
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
-    public void onPlayerSay(PlayerChatEvent event) {
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
         LuckyEventEntry rawLuckyEvent;
-
-        if (event.getMessage().equals("Mischief Managed")) {
-            event.getPlayer().sendMessage("Ok");
-            rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
-
-            EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
-            luckyEvent.reset();
-        }
-
 
         rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
 
         EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
         if (luckyEvent.isRunning()) {
 
-            if (event.getMessage().equals("Mischief Managed")) {
-                event.getPlayer().sendMessage("Ok");
-                rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+//            if (event.getMessage().equals("Mischief Managed")) {
+//                event.getPlayer().sendMessage("Ok");
+//                rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
+//
+//                luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
+//                luckyEvent.reset();
+//            }
 
-                luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
-                luckyEvent.reset();
+            if (event.getMessage().length() == 1) {
+
+                if (event.getMessage().equalsIgnoreCase(luckyEvent.getCorrectAnswer())) {
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(
+                            LuckyWorld.getInstance(), () -> {
+                                luckyEvent.teacherSpeak(event.getPlayer(), "Correct!");
+                                luckyEvent.reset();
+                            }, 20);
+
+                } else {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(
+                            LuckyWorld.getInstance(), () -> luckyEvent.teacherSpeak(event.getPlayer(), "Looks you could really use that fresh air. Wrong, try again."), 20);
+
+                }
             }
 
         }
 
 
-        if (event.getMessage().length() == 1) {
 
-            if (event.getMessage().equalsIgnoreCase(luckyEvent.getCorrectAnswer())) {
-                luckyEvent.teacherSpeak(event.getPlayer(), "Correct!");
-                luckyEvent.reset();
-            } else {
-                luckyEvent.teacherSpeak(event.getPlayer(), "Looks you could really use that fresh air. Wrong, try again.");
-            }
-        }
     }
 
     @EventHandler
@@ -146,9 +171,7 @@ class LWListener implements Listener {
                     LuckyEventEntry rawLuckyEvent = LWEventHandler.getEventByRarityAndName(LWEventHandler.LuckyEventRarity.DREAM, "classroom");
 
                     EventClassroom luckyEvent = (EventClassroom) Objects.requireNonNull(rawLuckyEvent).event;
-                    if (!luckyEvent.isRunning() || luckyEvent.needsCancel || event.getVehicle().isDead()) {
-                        luckyEvent.reset();
-                    } else {
+                    if (luckyEvent.isRunning() && !luckyEvent.needsCancel && !event.getVehicle().isDead()) {
                         player.sendMessage("Uh uh uh!");
                         event.setCancelled(true);
                     }
